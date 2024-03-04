@@ -1,9 +1,12 @@
 package com.ict.careus.enumeration;
 
 public enum CampaignCategory {
-    BENCANA_ALAM,
+    MARHABBAH_RAMADHAN,
+    RAMADHAN,
+    EKONOMI,
+    SOSIAL_DAN_KEAGAMAAN,
     KESEHATAN,
-    DIFABEL,
-    PENDIDIKAN
+    PENDIDIKAN,
+    DAKWAH_DAN_KEMANUSIAAN
 }
 

@@ -1,6 +1,7 @@
 package com.ict.careus.controller;
 
 
+import com.ict.careus.dto.request.CampaignRequest;
 import com.ict.careus.enumeration.CampaignCategory;
 import com.ict.careus.model.Campaign;
 import com.ict.careus.model.Category;
@@ -22,8 +23,8 @@ public class CampaignController {
     private CampaignService campaignService;
 
     @PostMapping("/admin/create-campaign")
-    public ResponseEntity<Campaign> createCampaign(@RequestBody Campaign campaign){
-        Campaign createdCampaign = campaignService.createCampaign(campaign);
+    public ResponseEntity<Campaign> createCampaign(@ModelAttribute CampaignRequest campaignRequest){
+        Campaign createdCampaign = campaignService.createCampaign(campaignRequest);
 
         return new ResponseEntity<>(createdCampaign, HttpStatus.CREATED);
     }

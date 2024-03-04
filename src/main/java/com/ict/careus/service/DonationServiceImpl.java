@@ -36,14 +36,10 @@ public class DonationServiceImpl implements DonationService{
 
             donation = donationRepository.save(donation);
 
-            // Call stored procedure to update currentAmount in Campaign
             donationRepository.update_campaign_current_amount(campaignCode, donation.getAmount());
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
             String password = dateFormat.format(new Date());
-
-            //send wa
-            //sendPasswordViaWhatsApp(donation.getNoPhone(), password);
 
             User user = userRepository.findByNoPhone(donation.getNoPhone());
             if (user == null){
