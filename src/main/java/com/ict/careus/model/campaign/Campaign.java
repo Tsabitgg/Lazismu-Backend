@@ -1,12 +1,11 @@
-package com.ict.careus.model;
+package com.ict.careus.model.campaign;
 
+import com.ict.careus.enumeration.WakafCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
@@ -21,7 +20,7 @@ public class Campaign {
     private int campaignId;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private Category category;
 
     private String campaignName;
@@ -45,5 +44,5 @@ public class Campaign {
 
     private boolean active;
 
-    private String generatelink;
+    private String generateLink;
 }

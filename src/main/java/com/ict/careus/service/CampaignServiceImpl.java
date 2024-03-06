@@ -4,8 +4,8 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ict.careus.dto.request.CampaignRequest;
 import com.ict.careus.enumeration.CampaignCategory;
-import com.ict.careus.model.Campaign;
-import com.ict.careus.model.Category;
+import com.ict.careus.model.campaign.Campaign;
+import com.ict.careus.model.campaign.Category;
 import com.ict.careus.repository.CampaignRepository;
 import com.ict.careus.repository.CategoryRepository;
 import org.modelmapper.ModelMapper;
@@ -54,30 +54,48 @@ public class CampaignServiceImpl implements CampaignService{
         }
 
         String baseurl = "www.careus.com/campaign/";
-        campaign.setGeneratelink(baseurl + campaign.getCampaignCode());
+        campaign.setGenerateLink(baseurl + campaign.getCampaignCode());
 
-        // Menyimpan objek Campaign baru ke dalam basis data
         return campaignRepository.save(campaign);
     }
 
 
     @Override
-    public Campaign updateCampaign(String campaignCode, Campaign campaign) {
+    public Campaign updateCampaign(String campaignCode, CampaignRequest campaignRequest) {
         Campaign updateCampaign = campaignRepository.findByCampaignCode(campaignCode);
-        if (updateCampaign != null){
-            updateCampaign.setCampaignCode(campaign.getCampaignCode());
-            updateCampaign.setCampaignName(campaign.getCampaignName());
-            updateCampaign.setCampaignImage(campaign.getCampaignImage());
-            updateCampaign.setDescription(campaign.getDescription());
-            updateCampaign.setLocation(campaign.getLocation());
-            updateCampaign.setVaNumber(campaign.getVaNumber());
-            updateCampaign.setTargetAmount(campaign.getTargetAmount());
-            updateCampaign.setCurrentAmount(campaign.getCurrentAmount());
-            updateCampaign.setActive(campaign.isActive());
+
+        if (updateCampaign != null) {
+            updateCampaign.setCampaignCode(campaignRequest.getCampaignCode());
+            updateCampaign.setCampaignName(campaignRequest.getCampaignName());
+            updateCampaign.setDescription(campaignRequest.getDescription());
+            updateCampaign.setLocation(campaignRequest.getLocation());
+            updateCampaign.setVaNumber(campaignRequest.getVaNumber());
+            updateCampaign.setTargetAmount(campaignRequest.getTargetAmount());
+            updateCampaign.setCurrentAmount(campaignRequest.getCurrentAmount());
+            updateCampaign.setActive(campaignRequest.isActive());
+
+            if (campaignRequest.getCampaignImage() != null && !campaignRequest.getCampaignImage().isEmpty()) {
+                try {
+                    Map<?, ?> uploadResult = cloudinary.uploader().upload(
+                            campaignRequest.getCampaignImage().getBytes(),
+                            ObjectUtils.emptyMap());
+                    String imageUrl = uploadResult.get("url").toString();
+                    updateCampaign.setCampaignImage(imageUrl);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            String baseUrl = "www.careus.com/campaign/";
+            updateCampaign.setGenerateLink(baseUrl + updateCampaign.getCampaignCode());
+
             return campaignRepository.save(updateCampaign);
         }
+
         return null;
     }
+
 
     @Override
     public List<Campaign> getAllCampaign() {

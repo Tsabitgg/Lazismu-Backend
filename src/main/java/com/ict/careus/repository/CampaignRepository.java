@@ -1,8 +1,7 @@
 package com.ict.careus.repository;
 
 import com.ict.careus.enumeration.CampaignCategory;
-import com.ict.careus.model.Campaign;
-import com.ict.careus.model.Category;
+import com.ict.careus.model.campaign.Campaign;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

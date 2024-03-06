@@ -1,4 +1,4 @@
-package com.ict.careus.model;
+package com.ict.careus.model.campaign;
 
 import com.ict.careus.enumeration.CampaignCategory;
 import jakarta.persistence.*;
@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
     private int categoryId;
 
     @Enumerated(EnumType.STRING)
     private CampaignCategory categoryName;
 
-    private String categoryImage;
 }

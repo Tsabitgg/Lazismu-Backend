@@ -2,11 +2,8 @@ package com.ict.careus.controller;
 
 
 import com.ict.careus.dto.request.CampaignRequest;
-import com.ict.careus.enumeration.CampaignCategory;
-import com.ict.careus.model.Campaign;
-import com.ict.careus.model.Category;
+import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.service.CampaignService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +27,8 @@ public class CampaignController {
     }
 
     @PutMapping("/admin/update-campaign/{campaignCode}")
-    public ResponseEntity<Campaign> updateCampaign(@PathVariable String campaignCode, @RequestBody Campaign campaign){
-        Campaign updatedCampaign = campaignService.updateCampaign(campaignCode, campaign);
+    public ResponseEntity<Campaign> updateCampaign(@PathVariable String campaignCode, @ModelAttribute CampaignRequest campaignRequest){
+        Campaign updatedCampaign = campaignService.updateCampaign(campaignCode, campaignRequest);
         if (updatedCampaign != null){
             return ResponseEntity.ok(updatedCampaign);
         } else {
