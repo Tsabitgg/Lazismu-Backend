@@ -21,7 +21,7 @@ public class Transaction {
     private int transactionId;
 
     @Column(length = 20)
-    private String name;
+    private String username;
 
     @Column(length = 15)
     private String noPhone;

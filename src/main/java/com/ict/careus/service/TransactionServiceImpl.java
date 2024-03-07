@@ -1,5 +1,6 @@
 package com.ict.careus.service;
 
+import com.ict.careus.model.Role;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.transaction.Transaction;
 import com.ict.careus.model.User;
@@ -33,10 +34,11 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
-
-
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     public Transaction createTransaction(String transactionType, String code, Transaction transaction) {
@@ -98,10 +100,9 @@ public class TransactionServiceImpl implements TransactionService {
         User user = userRepository.findByNoPhone(transaction.getNoPhone());
         if (user == null) {
             user = new User();
-            user.setName(transaction.getName());
+            user.setUsername(transaction.getUsername());
             user.setNoPhone(transaction.getNoPhone());
             user.setPassword(password);
-            user.setActive(true);
             userRepository.save(user);
         }
 
