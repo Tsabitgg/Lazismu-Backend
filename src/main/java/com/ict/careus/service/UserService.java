@@ -4,10 +4,7 @@ import com.ict.careus.model.User;
 
 import java.util.List;
 
-public interface AdminService {
+public interface UserService {
 
     List<User> getAllUser();
-
-    //Admin findByUsername(String username);
-    //Admin saveAdmin(Admin admin);
 }

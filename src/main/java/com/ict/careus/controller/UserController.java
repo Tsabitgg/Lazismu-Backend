@@ -1,7 +1,7 @@
 package com.ict.careus.controller;
 
 import com.ict.careus.model.User;
-import com.ict.careus.service.AdminService;
+import com.ict.careus.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,15 +12,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class AdminController {
+public class UserController {
 
 
     @Autowired
-    private AdminService adminService;
+    private UserService userService;
 
     @GetMapping(value = "/admin/get-all-user")
     public ResponseEntity<List<User>> getAllUser(){
-        List<User> user = adminService.getAllUser();
+        List<User> user = userService.getAllUser();
         return ResponseEntity.ok(user);
     }
 }

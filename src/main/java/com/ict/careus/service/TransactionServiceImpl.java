@@ -1,6 +1,5 @@
 package com.ict.careus.service;
 
-import com.ict.careus.model.Role;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.transaction.Transaction;
 import com.ict.careus.model.User;
@@ -10,6 +9,7 @@ import com.ict.careus.model.ziswaf.Zakat;
 import com.ict.careus.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -38,7 +38,7 @@ public class TransactionServiceImpl implements TransactionService {
     private UserRepository userRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
+    private PasswordEncoder encoder;
 
     @Override
     public Transaction createTransaction(String transactionType, String code, Transaction transaction) {
@@ -102,7 +102,9 @@ public class TransactionServiceImpl implements TransactionService {
             user = new User();
             user.setUsername(transaction.getUsername());
             user.setNoPhone(transaction.getNoPhone());
-            user.setPassword(password);
+
+            String encodePassword = encoder.encode(password);
+            user.setPassword(encodePassword);
             userRepository.save(user);
         }
 
