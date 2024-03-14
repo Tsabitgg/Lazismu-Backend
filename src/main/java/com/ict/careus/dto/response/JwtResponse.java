@@ -10,14 +10,14 @@ public class JwtResponse {
     private String type = "Bearer";
     private int id;
     private String username;
-    private String noPhone;
+    private String phoneNumber;
     private List<String> roles;
 
-    public JwtResponse(String accessToken, int id, String username, String noPhone, List<String> roles) {
+    public JwtResponse(String accessToken, int id, String username, String phoneNumber, List<String> roles) {
         this.token = accessToken;
         this.id = id;
         this.username = username;
-        this.noPhone = noPhone;
+        this.phoneNumber = phoneNumber;
         this.roles = roles;
     }
 }

@@ -52,7 +52,7 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getNoPhone(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
@@ -77,7 +77,7 @@ public class AuthController {
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
-        if (userRepository.existsByNoPhone(signUpRequest.getNoPhone())) {
+        if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: NoPhone is already in use!"));
@@ -85,7 +85,7 @@ public class AuthController {
 
         // Create new user's account
         User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getNoPhone(),
+                signUpRequest.getPhoneNumber(),
                 encoder.encode(signUpRequest.getPassword()));
 
         Set<String> strRoles = signUpRequest.getRole();

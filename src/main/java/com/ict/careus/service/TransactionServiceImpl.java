@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -97,16 +98,19 @@ public class TransactionServiceImpl implements TransactionService {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         String password = dateFormat.format(new Date());
-        User user = userRepository.findByNoPhone(transaction.getNoPhone());
-        if (user == null) {
-            user = new User();
-            user.setUsername(transaction.getUsername());
-            user.setNoPhone(transaction.getNoPhone());
+        Optional<User> userOptional = userRepository.findByPhoneNumber(transaction.getPhoneNumber());
+        if (userOptional.isEmpty()) {
+            User newUser = new User();
+            newUser.setUsername(transaction.getUsername());
+            newUser.setPhoneNumber(transaction.getPhoneNumber());
 
             String encodePassword = encoder.encode(password);
-            user.setPassword(encodePassword);
-            userRepository.save(user);
+            newUser.setPassword(encodePassword);
+            userRepository.save(newUser);
+        } else {
+            User user = userOptional.get();
         }
+
 
         return transaction;
     }

@@ -19,18 +19,18 @@ public class UserDetailsImpl implements UserDetails {
 
     private String username;
 
-    private String noPhone;
+    private String phoneNumber;
 
     @JsonIgnore
     private String password;
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(int id, String username, String noPhone, String password,
+    public UserDetailsImpl(int id, String username, String phoneNumber, String password,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
-        this.noPhone = noPhone;
+        this.phoneNumber = phoneNumber;
         this.password = password;
         this.authorities = authorities;
     }
@@ -43,7 +43,7 @@ public class UserDetailsImpl implements UserDetails {
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
-                user.getNoPhone(),
+                user.getPhoneNumber(),
                 user.getPassword(),
                 authorities);
     }
@@ -58,7 +58,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public String getNoPhone() {
-        return noPhone;
+        return phoneNumber;
     }
 
     @Override

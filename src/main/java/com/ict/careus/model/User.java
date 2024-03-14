@@ -14,16 +14,16 @@ import lombok.Data;
 @Table(name = "users",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "username"),
-                @UniqueConstraint(columnNames = "noPhone")
+                @UniqueConstraint(columnNames = "phoneNumber")
         })
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int Id;
 
     private String username;
 
-    private String noPhone;
+    private String phoneNumber;
 
     private String password;
 
@@ -36,9 +36,9 @@ public class User {
     public User() {
     }
 
-    public User(String username, String noPhone, String password) {
+    public User(String username, String phoneNumber, String password) {
         this.username = username;
-        this.noPhone = noPhone;
+        this.phoneNumber = phoneNumber;
         this.password = password;
     }
 }

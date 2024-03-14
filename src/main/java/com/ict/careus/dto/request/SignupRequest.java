@@ -7,7 +7,7 @@ import java.util.Set;
 @Data
 public class SignupRequest {
     private String username;
-    private String noPhone;
+    private String phoneNumber;
 
     private Set<String> role;
 

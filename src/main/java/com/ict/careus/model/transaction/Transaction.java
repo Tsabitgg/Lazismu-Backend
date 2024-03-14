@@ -1,5 +1,6 @@
 package com.ict.careus.model.transaction;
 
+import com.ict.careus.model.User;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.ziswaf.Infak;
 import com.ict.careus.model.ziswaf.Wakaf;
@@ -20,11 +21,15 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int transactionId;
 
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id")
+    private User user;
+
     @Column(length = 20)
     private String username;
 
     @Column(length = 15)
-    private String noPhone;
+    private String phoneNumber;
     private double transactionAmount;
     private String message;
     private Date transactionDate;
