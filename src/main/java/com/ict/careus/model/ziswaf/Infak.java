@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class Infak {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int infakId;
+    private long infakId;
     private String infakCode;
 
     @Enumerated(EnumType.STRING)

@@ -1,9 +1,6 @@
 package com.ict.careus.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,8 +9,8 @@ import java.util.Date;
 @Data
 public class CampaignRequest {
 
-    private int campaignId;
-    private int categoryId;
+    private long campaignId;
+    private long categoryId;
     private String campaignName;
     private String campaignCode;
     private MultipartFile campaignImage;

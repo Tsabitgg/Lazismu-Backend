@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface InfakRepository extends JpaRepository<Infak, Integer> {
+public interface InfakRepository extends JpaRepository<Infak, Long> {
     Infak findByInfakCode(String infakCode);
 }

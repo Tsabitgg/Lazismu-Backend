@@ -14,7 +14,7 @@ public class Zakat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int zakatId;
+    private long zakatId;
     private String zakatCode;
 
     @Enumerated(EnumType.STRING)

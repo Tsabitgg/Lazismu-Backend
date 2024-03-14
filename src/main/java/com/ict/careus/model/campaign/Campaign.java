@@ -17,7 +17,7 @@ public class Campaign {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int campaignId;
+    private Long campaignId;
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")

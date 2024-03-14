@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class Wakaf {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int wakafId;
+    private long wakafId;
     private String wakafCode;
 
     @Enumerated(EnumType.STRING)

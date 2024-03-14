@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CampaignRepository extends JpaRepository<Campaign, Integer> {
+public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
     @Query("SELECT c FROM Campaign c WHERE c.category.categoryName = :categoryName")
     List<Campaign> findByCategoryName(@Param("categoryName") CampaignCategory categoryName);

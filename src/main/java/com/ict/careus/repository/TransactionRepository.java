@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     @Procedure
     void update_campaign_current_amount(@Param("campaignCode") String campaignCode, @Param("TransactionAmount") double transactionAmount);
 

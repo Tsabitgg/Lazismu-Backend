@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ZakatRepository extends JpaRepository<Zakat, Integer> {
+public interface ZakatRepository extends JpaRepository<Zakat, Long> {
     Zakat findByZakatCode(String zakatCode);
 }
