@@ -1,4 +1,4 @@
-package com.ict.careus.model;
+package com.ict.careus.model.user;
 
 import com.ict.careus.enumeration.ERole;
 import jakarta.persistence.*;
@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "roles")
 public class Role {

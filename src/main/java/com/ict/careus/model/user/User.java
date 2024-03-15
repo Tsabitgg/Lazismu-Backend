@@ -1,9 +1,10 @@
-package com.ict.careus.model;
+package com.ict.careus.model.user;
 
 
 import java.util.HashSet;
 import java.util.Set;
 
+import com.ict.careus.model.user.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.ict.careus.model.transaction;
 
-import com.ict.careus.model.User;
+import com.ict.careus.model.user.User;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.ziswaf.Infak;
 import com.ict.careus.model.ziswaf.Wakaf;

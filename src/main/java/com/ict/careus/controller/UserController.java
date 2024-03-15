@@ -1,6 +1,6 @@
 package com.ict.careus.controller;
 
-import com.ict.careus.model.User;
+import com.ict.careus.model.user.User;
 import com.ict.careus.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

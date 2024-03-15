@@ -1,6 +1,6 @@
 package com.ict.careus.service;
 
-import com.ict.careus.model.User;
+import com.ict.careus.model.user.User;
 
 import java.util.List;
 

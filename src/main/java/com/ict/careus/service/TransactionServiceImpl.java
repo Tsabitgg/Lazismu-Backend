@@ -1,20 +1,26 @@
 package com.ict.careus.service;
 
+import com.ict.careus.dto.request.TransactionRequest;
+import com.ict.careus.enumeration.ERole;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.transaction.Transaction;
-import com.ict.careus.model.User;
+import com.ict.careus.model.user.Role;
+import com.ict.careus.model.user.User;
 import com.ict.careus.model.ziswaf.Infak;
 import com.ict.careus.model.ziswaf.Wakaf;
 import com.ict.careus.model.ziswaf.Zakat;
 import com.ict.careus.repository.*;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -39,10 +45,17 @@ public class TransactionServiceImpl implements TransactionService {
     private UserRepository userRepository;
 
     @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
     private PasswordEncoder encoder;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public Transaction createTransaction(String transactionType, String code, Transaction transaction) {
+    public Transaction createTransaction(String transactionType, String code, TransactionRequest transactionRequest) {
+        Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
         switch (transactionType) {
             case "campaign":
                 Campaign campaign = campaignRepository.findByCampaignCode(code);
@@ -88,11 +101,11 @@ public class TransactionServiceImpl implements TransactionService {
         // Update amount berdasarkan type
         if (transactionType.equals("campaign")) {
             transactionRepository.update_campaign_current_amount(code, transaction.getTransactionAmount());
-        }else  if (transactionType.equals("zakat")){
+        } else if (transactionType.equals("zakat")) {
             transactionRepository.update_zakat_amount(code, transaction.getTransactionAmount());
-        } else if (transactionType.equals("infak")){
+        } else if (transactionType.equals("infak")) {
             transactionRepository.update_infak_amount(code, transaction.getTransactionAmount());
-        } else if (transactionType.equals("wakaf")){
+        } else if (transactionType.equals("wakaf")) {
             transactionRepository.update_wakaf_amount(code, transaction.getTransactionAmount());
         }
 
@@ -106,13 +119,20 @@ public class TransactionServiceImpl implements TransactionService {
 
             String encodePassword = encoder.encode(password);
             newUser.setPassword(encodePassword);
+
+            Set<String> strRoles = transactionRequest.getRole();
+            Set<Role> roles = new HashSet<>();
+
+            if (strRoles == null || strRoles.isEmpty()) {
+                Role userRole = roleRepository.findByName(ERole.USER)
+                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                roles.add(userRole);
+            }
+
+            newUser.setRoles(roles);
             userRepository.save(newUser);
-        } else {
-            User user = userOptional.get();
         }
-
-
         return transaction;
     }
-
 }
+

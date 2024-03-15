@@ -1,7 +1,7 @@
 package com.ict.careus.repository;
 
 import com.ict.careus.enumeration.ERole;
-import com.ict.careus.model.Role;
+import com.ict.careus.model.user.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

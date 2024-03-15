@@ -1,6 +1,6 @@
 package com.ict.careus.security.services;
 
-import com.ict.careus.model.User;
+import com.ict.careus.model.user.User;
 import com.ict.careus.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
