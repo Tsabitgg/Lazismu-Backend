@@ -20,5 +20,5 @@ public class Zakat {
     @Enumerated(EnumType.STRING)
     private ZakatCategory zakatCategory;
     private double amount;
-
+    private double distribution;
 }

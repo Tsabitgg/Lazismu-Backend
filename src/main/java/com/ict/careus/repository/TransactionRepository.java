@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     @Procedure
@@ -19,4 +21,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     @Procedure
     void update_wakaf_amount(@Param("wakafCode") String wakafCode, @Param("TransactionAmount") double transactionAmount);
+
+
 }

@@ -20,4 +20,5 @@ public class Wakaf {
     @Enumerated(EnumType.STRING)
     private WakafCategory wakafCategory;
     private double amount;
+    private double distribution;
 }

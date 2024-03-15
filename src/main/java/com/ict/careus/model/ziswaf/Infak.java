@@ -19,5 +19,5 @@ public class Infak {
     @Enumerated(EnumType.STRING)
     private InfakCategory infakCategory;
     private double amount;
-
+    private double distribution;
 }
