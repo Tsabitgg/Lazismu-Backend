@@ -5,6 +5,7 @@ import com.ict.careus.enumeration.CampaignCategory;
 import com.ict.careus.enumeration.InfakCategory;
 import com.ict.careus.enumeration.WakafCategory;
 import com.ict.careus.enumeration.ZakatCategory;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class CategoriesController {
