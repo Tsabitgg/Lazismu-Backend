@@ -1,5 +1,6 @@
 package com.ict.careus.model.transaction;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ict.careus.model.user.User;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.ziswaf.Infak;
@@ -16,6 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
