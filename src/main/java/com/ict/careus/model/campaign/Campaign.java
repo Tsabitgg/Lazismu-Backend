@@ -31,6 +31,7 @@ public class Campaign {
     private double targetAmount;
     private double currentAmount;
     private String vaNumber;
+    private String creator;
     private double distribution;
 
     @Column(nullable = false, updatable = false)

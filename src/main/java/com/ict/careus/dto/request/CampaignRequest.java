@@ -18,10 +18,12 @@ public class CampaignRequest {
     private String location;
     private double targetAmount;
     private double currentAmount;
+    private String vaNumber;
+    private String creator;
+    private String distribution;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
-    private String vaNumber;
     private boolean active;
 }
