@@ -72,6 +72,7 @@ public class CampaignServiceImpl implements CampaignService{
             updateCampaign.setVaNumber(campaignRequest.getVaNumber());
             updateCampaign.setTargetAmount(campaignRequest.getTargetAmount());
             updateCampaign.setCurrentAmount(campaignRequest.getCurrentAmount());
+            updateCampaign.setCreator(campaignRequest.getCreator());
             updateCampaign.setActive(campaignRequest.isActive());
 
             if (campaignRequest.getCampaignImage() != null && !campaignRequest.getCampaignImage().isEmpty()) {

@@ -20,7 +20,6 @@ public class CampaignRequest {
     private double currentAmount;
     private String vaNumber;
     private String creator;
-    private String distribution;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
