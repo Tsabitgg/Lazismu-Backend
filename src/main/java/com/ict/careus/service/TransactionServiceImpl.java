@@ -1,6 +1,7 @@
 package com.ict.careus.service;
 
 import com.ict.careus.dto.request.TransactionRequest;
+import com.ict.careus.dto.response.CampaignTransactionsHistoryResponse;
 import com.ict.careus.dto.response.UserTransactionsHistoryResponse;
 import com.ict.careus.enumeration.ERole;
 import com.ict.careus.model.campaign.Campaign;
@@ -134,12 +135,33 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<UserTransactionsHistoryResponse> getUserTransactionsHistory(User user) {
-        List<Transaction> userTransactions = transactionRepository.findByUser(user);
-        return convertToDTOs(userTransactions);
+    public List<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign) {
+        List<Transaction> campaignTransactions = transactionRepository.findByCampaign(campaign);
+        return campaignTransactionsDTO(campaignTransactions);
     }
 
-    private List<UserTransactionsHistoryResponse> convertToDTOs(List<Transaction> transactions) {
+
+    private  List<CampaignTransactionsHistoryResponse> campaignTransactionsDTO(List<Transaction> transactions){
+        List<CampaignTransactionsHistoryResponse> campaignTransactionsHistory = new ArrayList<>();
+        for (Transaction transaction : transactions){
+            CampaignTransactionsHistoryResponse campaignTransactionsDTO = new CampaignTransactionsHistoryResponse();
+            campaignTransactionsDTO.setUsername(transaction.getUsername());
+            campaignTransactionsDTO.setTransactionAmount(transaction.getTransactionAmount());
+            campaignTransactionsDTO.setMessage(transaction.getMessage());
+            campaignTransactionsDTO.setTransactionDate(transaction.getTransactionDate());
+
+            campaignTransactionsHistory.add(campaignTransactionsDTO);
+        }
+        return campaignTransactionsHistory;
+    }
+
+    @Override
+    public List<UserTransactionsHistoryResponse> getUserTransactionsHistory(User user) {
+        List<Transaction> userTransactions = transactionRepository.findByUser(user);
+        return userTransacctionsDTO(userTransactions);
+    }
+
+    private List<UserTransactionsHistoryResponse> userTransacctionsDTO(List<Transaction> transactions) {
         List<UserTransactionsHistoryResponse> userTransactionsHistory = new ArrayList<>();
         for (Transaction transaction : transactions) {
             UserTransactionsHistoryResponse transactionDTO = new UserTransactionsHistoryResponse();

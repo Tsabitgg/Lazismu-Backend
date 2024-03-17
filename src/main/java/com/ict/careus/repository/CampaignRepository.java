@@ -16,5 +16,6 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     List<Campaign> findByCategoryName(@Param("categoryName") CampaignCategory categoryName);
 
     List<Campaign> findCampaignByActive(boolean isActive);
-    Campaign findByCampaignCode(String CampaignCode);
+
+    Campaign findByCampaignCode(String campaignCode);
 }

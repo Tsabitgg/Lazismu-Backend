@@ -2,8 +2,12 @@ package com.ict.careus.controller;
 
 
 import com.ict.careus.dto.request.CampaignRequest;
+import com.ict.careus.dto.response.CampaignTransactionsHistoryResponse;
+import com.ict.careus.dto.response.UserTransactionsHistoryResponse;
 import com.ict.careus.model.campaign.Campaign;
+import com.ict.careus.model.user.User;
 import com.ict.careus.service.CampaignService;
+import com.ict.careus.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,9 @@ public class CampaignController {
 
     @Autowired
     private CampaignService campaignService;
+
+    @Autowired
+    private TransactionService transactionService;
 
     @PostMapping("/admin/create-campaign")
     public ResponseEntity<Campaign> createCampaign(@ModelAttribute CampaignRequest campaignRequest){
@@ -63,5 +70,16 @@ public class CampaignController {
     @GetMapping("/campaign/category/{categoryName}")
     public List<Campaign> getCampaigByCategoryName(@PathVariable String categoryName) {
         return campaignService.getCampaignByCategoryName(categoryName);
+    }
+
+    @GetMapping("/campaign/{campaignCode}/history")
+    public ResponseEntity<List<CampaignTransactionsHistoryResponse>> getCampaignTransactionsHistory(@PathVariable String campaignCode) {
+        Optional<Campaign> campaignOptional = campaignService.getCampaignByCode(campaignCode);
+        if (!campaignOptional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        Campaign campaign = campaignOptional.get();
+        List<CampaignTransactionsHistoryResponse> campaignTransactionsDTO = transactionService.getCampaignTransactionsHistory(campaign);
+        return ResponseEntity.ok(campaignTransactionsDTO);
     }
 }

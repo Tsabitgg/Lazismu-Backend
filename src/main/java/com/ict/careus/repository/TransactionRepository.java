@@ -1,5 +1,6 @@
 package com.ict.careus.repository;
 
+import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.transaction.Transaction;
 import com.ict.careus.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,5 +26,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     void update_wakaf_amount(@Param("wakafCode") String wakafCode, @Param("TransactionAmount") double transactionAmount);
 
     List<Transaction> findByUser(User user);
+
+    List<Transaction> findByCampaign(Campaign campaign);
 
 }
