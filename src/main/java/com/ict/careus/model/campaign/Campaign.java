@@ -1,6 +1,5 @@
 package com.ict.careus.model.campaign;
 
-import com.ict.careus.enumeration.WakafCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,6 +43,7 @@ public class Campaign {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
+    @Column(columnDefinition = "BOOLEAN")
     private boolean active;
 
     private String generateLink;

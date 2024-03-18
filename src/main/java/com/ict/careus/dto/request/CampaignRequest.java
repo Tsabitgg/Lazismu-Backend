@@ -1,5 +1,6 @@
 package com.ict.careus.dto.request;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,5 +25,7 @@ public class CampaignRequest {
     private Date startDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
+
+    @Column(columnDefinition = "BOOLEAN")
     private boolean active;
 }
