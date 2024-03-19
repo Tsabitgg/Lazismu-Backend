@@ -140,6 +140,11 @@ public class TransactionServiceImpl implements TransactionService {
         return campaignTransactionsDTO(campaignTransactions);
     }
 
+    @Override
+    public List<Transaction> getAllTransaction() {
+        return transactionRepository.findAll();
+    }
+
 
     private  List<CampaignTransactionsHistoryResponse> campaignTransactionsDTO(List<Transaction> transactions){
         List<CampaignTransactionsHistoryResponse> campaignTransactionsHistory = new ArrayList<>();

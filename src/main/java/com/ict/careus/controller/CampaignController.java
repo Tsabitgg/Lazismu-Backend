@@ -1,6 +1,7 @@
 package com.ict.careus.controller;
 
 
+import com.cloudinary.api.exceptions.BadRequest;
 import com.ict.careus.dto.request.CampaignRequest;
 import com.ict.careus.dto.response.CampaignTransactionsHistoryResponse;
 import com.ict.careus.dto.response.UserTransactionsHistoryResponse;
@@ -8,6 +9,7 @@ import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.user.User;
 import com.ict.careus.service.CampaignService;
 import com.ict.careus.service.TransactionService;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,19 +30,22 @@ public class CampaignController {
     private TransactionService transactionService;
 
     @PostMapping("/admin/create-campaign")
-    public ResponseEntity<Campaign> createCampaign(@ModelAttribute CampaignRequest campaignRequest){
-        Campaign createdCampaign = campaignService.createCampaign(campaignRequest);
-
-        return new ResponseEntity<>(createdCampaign, HttpStatus.CREATED);
+    public ResponseEntity<?> createCampaign(@ModelAttribute CampaignRequest campaignRequest) {
+        try {
+            Campaign createdCampaign = campaignService.createCampaign(campaignRequest);
+            return new ResponseEntity<>(createdCampaign, HttpStatus.CREATED);
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 
     @PutMapping("/admin/update-campaign/{campaignCode}")
-    public ResponseEntity<Campaign> updateCampaign(@PathVariable String campaignCode, @ModelAttribute CampaignRequest campaignRequest){
-        Campaign updatedCampaign = campaignService.updateCampaign(campaignCode, campaignRequest);
-        if (updatedCampaign != null){
-            return ResponseEntity.ok(updatedCampaign);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    public ResponseEntity<?> updateCampaign(@PathVariable String campaignCode, @ModelAttribute CampaignRequest campaignRequest) {
+        try{
+            Campaign updatedCampaign = campaignService.updateCampaign(campaignCode, campaignRequest);
+            return new ResponseEntity<>(updatedCampaign, HttpStatus.CREATED);
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
@@ -66,6 +71,23 @@ public class CampaignController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/campaign/id={campaignId}")
+    public ResponseEntity<Campaign> getCampaignById(@PathVariable long campaignId) {
+        Optional<Campaign> campaignOptional = campaignService.getCampaignById(campaignId);
+        if (campaignOptional.isPresent()){
+            return new ResponseEntity<>(campaignOptional.get(), HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/campaign/search")
+    public ResponseEntity<List<Campaign>> getCampaignByName(@RequestParam String campaignName){
+        List<Campaign> campaigns = campaignService.getCampaignByName(campaignName);
+        return new ResponseEntity<>(campaigns, HttpStatus.OK);
+    }
+
 
     @GetMapping("/campaign/category/{categoryName}")
     public List<Campaign> getCampaigByCategoryName(@PathVariable String categoryName) {

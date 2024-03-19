@@ -23,6 +23,7 @@ public class Campaign {
     private Category category;
 
     private String campaignName;
+
     private String campaignCode;
     private String campaignImage;
     private String description;

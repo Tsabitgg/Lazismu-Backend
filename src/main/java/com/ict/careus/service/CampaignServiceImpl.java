@@ -1,15 +1,20 @@
 package com.ict.careus.service;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.api.exceptions.BadRequest;
 import com.cloudinary.utils.ObjectUtils;
 import com.ict.careus.dto.request.CampaignRequest;
+import com.ict.careus.dto.response.MessageResponse;
 import com.ict.careus.enumeration.CampaignCategory;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.campaign.Category;
 import com.ict.careus.repository.CampaignRepository;
 import com.ict.careus.repository.CategoryRepository;
+import org.apache.coyote.BadRequestException;
+import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -33,12 +38,14 @@ public class CampaignServiceImpl implements CampaignService{
     private ModelMapper modelMapper;
 
     @Override
-    public Campaign createCampaign(CampaignRequest campaignRequest) {
-        Category category = categoryRepository.findById(campaignRequest.getCategoryId()).get();
-
-        // Membuat objek Campaign baru dengan menggunakan model mapper
+    public Campaign createCampaign(CampaignRequest campaignRequest) throws BadRequestException {
+        Category category = categoryRepository.findById(campaignRequest.getCategoryId()).orElseThrow(() -> new BadRequestException("Category not found"));
         Campaign campaign = modelMapper.map(campaignRequest, Campaign.class);
         campaign.setCategory(category);
+
+        if (campaignRepository.findByCampaignCode(campaignRequest.getCampaignCode()) != null){
+            throw new BadRequestException("Error: campaignCode is already taken!");
+        }
 
         if (campaignRequest.getCampaignImage() != null && !campaignRequest.getCampaignImage().isEmpty()) {
             try {
@@ -49,7 +56,7 @@ public class CampaignServiceImpl implements CampaignService{
                 campaign.setCampaignImage(imageUrl);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new BadRequestException("Error uploading image", e);
             }
         }
 
@@ -61,10 +68,15 @@ public class CampaignServiceImpl implements CampaignService{
 
 
     @Override
-    public Campaign updateCampaign(String campaignCode, CampaignRequest campaignRequest) {
+    public Campaign updateCampaign(String campaignCode, CampaignRequest campaignRequest) throws BadRequestException {
         Campaign updateCampaign = campaignRepository.findByCampaignCode(campaignCode);
 
         if (updateCampaign != null) {
+            if (!campaignCode.equals(campaignRequest.getCampaignCode()) &&
+                    campaignRepository.findByCampaignCode(campaignRequest.getCampaignCode()) != null) {
+                throw new BadRequestException("campaignCode is already taken!");
+            }
+
             updateCampaign.setCampaignCode(campaignRequest.getCampaignCode());
             updateCampaign.setCampaignName(campaignRequest.getCampaignName());
             updateCampaign.setDescription(campaignRequest.getDescription());
@@ -82,9 +94,8 @@ public class CampaignServiceImpl implements CampaignService{
                             ObjectUtils.emptyMap());
                     String imageUrl = uploadResult.get("url").toString();
                     updateCampaign.setCampaignImage(imageUrl);
-
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new BadRequestException("Error uploading image", e);
                 }
             }
 
@@ -92,11 +103,10 @@ public class CampaignServiceImpl implements CampaignService{
             updateCampaign.setGenerateLink(baseUrl + updateCampaign.getCampaignCode());
 
             return campaignRepository.save(updateCampaign);
+        } else {
+            throw new BadRequestException("Campaign not found!");
         }
-
-        return null;
     }
-
 
     @Override
     public List<Campaign> getAllCampaign() {
@@ -111,6 +121,16 @@ public class CampaignServiceImpl implements CampaignService{
     @Override
     public Optional<Campaign> getCampaignByCode(String campaignCode) {
         return Optional.ofNullable(campaignRepository.findByCampaignCode(campaignCode));
+    }
+
+    @Override
+    public Optional<Campaign> getCampaignById(long campaignId) {
+        return Optional.ofNullable(campaignRepository.findById(campaignId));
+    }
+
+    @Override
+    public List<Campaign> getCampaignByName(String campaignName) {
+        return campaignRepository.findByCampaignName(campaignName);
     }
 
     @Override

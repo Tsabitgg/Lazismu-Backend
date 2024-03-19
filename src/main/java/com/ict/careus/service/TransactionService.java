@@ -16,4 +16,6 @@ public interface TransactionService {
     List<UserTransactionsHistoryResponse> getUserTransactionsHistory(User user);
 
     List<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign);
+
+    List<Transaction> getAllTransaction();
 }

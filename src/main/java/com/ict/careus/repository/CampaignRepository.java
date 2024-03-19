@@ -18,4 +18,9 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     List<Campaign> findCampaignByActive(boolean isActive);
 
     Campaign findByCampaignCode(String campaignCode);
+
+    Campaign findById(long campaignId);
+
+    @Query("SELECT c FROM Campaign c WHERE LOWER(c.campaignName) LIKE LOWER(CONCAT('%', :campaignName, '%'))")
+    List<Campaign> findByCampaignName(String campaignName);
 }
