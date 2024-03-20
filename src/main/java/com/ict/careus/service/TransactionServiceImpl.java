@@ -55,6 +55,25 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction createTransaction(String transactionType, String code, TransactionRequest transactionRequest) {
         Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
+
+        Optional<User> userOptional = userRepository.findByPhoneNumber(transaction.getPhoneNumber());
+        User user;
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+        } else {
+            String password = new SimpleDateFormat("yyyyMMdd").format(new Date());
+            user = new User();
+            user.setUsername(transaction.getUsername());
+            user.setPhoneNumber(transaction.getPhoneNumber());
+            String encodePassword = encoder.encode(password);
+            user.setPassword(encodePassword);
+            user.setRoles(Collections.singleton(roleRepository.findByName(ERole.USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."))));
+            userRepository.save(user);
+        }
+
+        transaction.setUser(user);
+
         switch (transactionType) {
             case "campaign":
                 Campaign campaign = campaignRepository.findByCampaignCode(code);
@@ -97,42 +116,24 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setSuccess(true);
         transaction = transactionRepository.save(transaction);
 
-        // Update amount berdasarkan type
-        if (transactionType.equals("campaign")) {
-            transactionRepository.update_campaign_current_amount(code, transaction.getTransactionAmount());
-        } else if (transactionType.equals("zakat")) {
-            transactionRepository.update_zakat_amount(code, transaction.getTransactionAmount());
-        } else if (transactionType.equals("infak")) {
-            transactionRepository.update_infak_amount(code, transaction.getTransactionAmount());
-        } else if (transactionType.equals("wakaf")) {
-            transactionRepository.update_wakaf_amount(code, transaction.getTransactionAmount());
+        switch (transactionType) {
+            case "campaign":
+                transactionRepository.update_campaign_current_amount(code, transaction.getTransactionAmount());
+                break;
+            case "zakat":
+                transactionRepository.update_zakat_amount(code, transaction.getTransactionAmount());
+                break;
+            case "infak":
+                transactionRepository.update_infak_amount(code, transaction.getTransactionAmount());
+                break;
+            case "wakaf":
+                transactionRepository.update_wakaf_amount(code, transaction.getTransactionAmount());
+                break;
         }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        String password = dateFormat.format(new Date());
-        Optional<User> userOptional = userRepository.findByPhoneNumber(transaction.getPhoneNumber());
-        if (userOptional.isEmpty()) {
-            User newUser = new User();
-            newUser.setUsername(transaction.getUsername());
-            newUser.setPhoneNumber(transaction.getPhoneNumber());
-
-            String encodePassword = encoder.encode(password);
-            newUser.setPassword(encodePassword);
-
-            Set<String> strRoles = transactionRequest.getRole();
-            Set<Role> roles = new HashSet<>();
-
-            if (strRoles == null || strRoles.isEmpty()) {
-                Role userRole = roleRepository.findByName(ERole.USER)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                roles.add(userRole);
-            }
-
-            newUser.setRoles(roles);
-            userRepository.save(newUser);
-        }
         return transaction;
     }
+
 
     @Override
     public List<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign) {
