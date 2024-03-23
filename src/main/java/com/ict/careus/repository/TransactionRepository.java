@@ -29,4 +29,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findByCampaign(Campaign campaign);
 
+    @Query(value = "SELECT SUM(transaction.transaction_amount) AS total_donasi_campaign FROM transaction INNER JOIN\n" +
+            "campaign ON transaction.campaign_id = campaign.campaign_id", nativeQuery = true)
+    double totalDonationCampaign();
+
 }

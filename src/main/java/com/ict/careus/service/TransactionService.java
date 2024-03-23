@@ -18,4 +18,6 @@ public interface TransactionService {
     List<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign);
 
     List<Transaction> getAllTransaction();
+
+    double getTotalDonationCampaign();
 }

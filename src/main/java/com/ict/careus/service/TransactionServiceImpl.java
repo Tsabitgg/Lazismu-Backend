@@ -146,6 +146,11 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionRepository.findAll();
     }
 
+    @Override
+    public double getTotalDonationCampaign(){
+        return transactionRepository.totalDonationCampaign();
+    }
+
 
     private  List<CampaignTransactionsHistoryResponse> campaignTransactionsDTO(List<Transaction> transactions){
         List<CampaignTransactionsHistoryResponse> campaignTransactionsHistory = new ArrayList<>();

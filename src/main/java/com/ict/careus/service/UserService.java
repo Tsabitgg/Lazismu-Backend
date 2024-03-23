@@ -10,4 +10,6 @@ public interface UserService {
     List<User> getAllUser();
 
     Optional<User> findById(Long id);
+
+    long getTotalUser();
 }

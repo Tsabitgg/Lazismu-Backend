@@ -41,5 +41,8 @@ public class UserController {
         return ResponseEntity.ok(userTransactionsDTO);
     }
 
-
+    @GetMapping("/get-total-user")
+    public long getTotalUser(){
+        return userService.getTotalUser();
+    }
 }

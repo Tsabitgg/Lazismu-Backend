@@ -46,5 +46,10 @@ public class TransactionController {
         List<Transaction> transaction = transactionService.getAllTransaction();
         return ResponseEntity.ok(transaction);
     }
+
+    @GetMapping("/campaign/total-donation")
+    public double gettotalCampaignTransactionAmount(){
+        return transactionService.getTotalDonationCampaign();
+    }
 }
 
