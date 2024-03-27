@@ -21,4 +21,5 @@ public class Zakat {
     private ZakatCategory zakatCategory;
     private double amount;
     private double distribution;
+    private String vaNumber;
 }

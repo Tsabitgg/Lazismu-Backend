@@ -1,8 +1,11 @@
 package com.ict.careus.repository;
 
+import com.ict.careus.dto.response.TransactionResponse;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.transaction.Transaction;
 import com.ict.careus.model.user.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -10,6 +13,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
@@ -29,8 +34,45 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findByCampaign(Campaign campaign);
 
-    @Query(value = "SELECT SUM(transaction.transaction_amount) AS total_donasi_campaign FROM transaction INNER JOIN\n" +
+    @Query(value = "SELECT SUM(transaction.transaction_amount) FROM transaction INNER JOIN\n" +
             "campaign ON transaction.campaign_id = campaign.campaign_id", nativeQuery = true)
     double totalDonationCampaign();
+
+    @Query("SELECT t FROM Transaction t WHERE YEAR(t.transactionDate) = :year")
+    Page<TransactionResponse> findByYear(@Param("year") int year, Pageable pageable);
+
+    @Query(value = "SELECT\n" +
+            "    SUM(transaction_amount) AS total_donation,\n" +
+            "    SUM(CASE WHEN category = 'wakaf' THEN transaction_amount ELSE 0 END) AS wakaf_total,\n" +
+            "    SUM(CASE WHEN category = 'infak' THEN transaction_amount ELSE 0 END) AS infak_total,\n" +
+            "    SUM(CASE WHEN category = 'campaign' THEN transaction_amount ELSE 0 END) AS campaign_total,\n" +
+            "    SUM(CASE WHEN category = 'zakat' THEN transaction_amount ELSE 0 END) AS zakat_total\n" +
+            "FROM\n" +
+            "    transaction\n" +
+            "WHERE user_id = :userId", nativeQuery = true)
+    Map<String, Double> getUserTransactionSummary(@Param("userId") Long userId);
+
+    @Query(value = "SELECT\n" +
+            "    SUM(transaction_amount) AS total_donation,\n" +
+            "    SUM(CASE WHEN category = 'wakaf' THEN transaction_amount ELSE 0 END) AS wakaf_total,\n" +
+            "    SUM(CASE WHEN category = 'infak' THEN transaction_amount ELSE 0 END) AS infak_total,\n" +
+            "    SUM(CASE WHEN category = 'campaign' THEN transaction_amount ELSE 0 END) AS campaign_total,\n" +
+            "    SUM(CASE WHEN category = 'zakat' THEN transaction_amount ELSE 0 END) AS zakat_total\n" +
+            "FROM\n" +
+            "    transaction\n" +
+            "WHERE user_id = :userId AND YEAR(transaction_date) = :year", nativeQuery = true)
+    Map<String, Double> getUserTransactionSummaryByYear(@Param("userId") Long userId, @Param("year") int year);
+
+    @Query(value = "SELECT SUM(transaction_amount)" +
+            "FROM transaction " +
+            "WHERE YEAR(transaction_date) = :year", nativeQuery = true)
+    Double getTotalTransactionAmountByYear(@Param("year") int year);
+
+    @Query(value = "SELECT SUM(transaction_amount) " +
+            "FROM transaction", nativeQuery = true)
+    Double totalTransactionAmount();
+
+    @Query(value = "SELECT count(transaction_amount) FROM transaction", nativeQuery = true)
+    Double totalTransactionCount();
 
 }

@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.Date;
 
@@ -25,6 +26,8 @@ public class Distribution {
 
     private Date distributionDate;
 
+    private String receiver;
+
     private String image;
 
     private String description;
@@ -32,7 +35,7 @@ public class Distribution {
     private boolean success;
 
     @Column(length = 10)
-    private String type;
+    private String category;
 
     @ManyToOne
     @JoinColumn(name = "zakat_id")

@@ -21,4 +21,5 @@ public class Wakaf {
     private WakafCategory wakafCategory;
     private double amount;
     private double distribution;
+    private String vaNumber;
 }

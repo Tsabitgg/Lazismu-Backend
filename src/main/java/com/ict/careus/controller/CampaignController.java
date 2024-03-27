@@ -1,16 +1,15 @@
 package com.ict.careus.controller;
 
-
-import com.cloudinary.api.exceptions.BadRequest;
 import com.ict.careus.dto.request.CampaignRequest;
-import com.ict.careus.dto.response.CampaignTransactionsHistoryResponse;
-import com.ict.careus.dto.response.UserTransactionsHistoryResponse;
+import com.ict.careus.dto.response.CampaignTransactionsHistoryResponse;;
 import com.ict.careus.model.campaign.Campaign;
-import com.ict.careus.model.user.User;
 import com.ict.careus.service.CampaignService;
 import com.ict.careus.service.TransactionService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,9 +49,16 @@ public class CampaignController {
     }
 
     @GetMapping("/campaign")
-    public ResponseEntity<List<Campaign>>getAllCampaign(){
-        List<Campaign> campaign = campaignService.getAllCampaign();
-        return ResponseEntity.ok(campaign);
+    public Page<Campaign> getCampaigns(@RequestParam(name = "year", required = false) Integer year,
+                                       @RequestParam(name = "page", defaultValue = "0") int page) {
+        int pageSize = 12; // Jumlah campaign per halaman
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+
+        if (year != null) {
+            return campaignService.getCampaignsByYear(year, pageRequest);
+        } else {
+            return campaignService.getAllCampaign(pageRequest);
+        }
     }
 
     @GetMapping("/campaign/active")
@@ -83,15 +89,20 @@ public class CampaignController {
     }
 
     @GetMapping("/campaign/search")
-    public ResponseEntity<List<Campaign>> getCampaignByName(@RequestParam String campaignName){
-        List<Campaign> campaigns = campaignService.getCampaignByName(campaignName);
-        return new ResponseEntity<>(campaigns, HttpStatus.OK);
+    public Page<Campaign> getCampaignByName(@RequestParam String campaignName,
+                                            @RequestParam(name = "page", defaultValue = "0") int page){
+        int pageSize = 12; // Jumlah campaign per halaman
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+
+        return campaignService.getCampaignByName(campaignName, pageRequest);
     }
 
-
-    @GetMapping("/campaign/category/{categoryName}")
-    public List<Campaign> getCampaigByCategoryName(@PathVariable String categoryName) {
-        return campaignService.getCampaignByCategoryName(categoryName);
+    @GetMapping("/campaign/category")
+    public Page<Campaign> getCampaigByCategoryName(@RequestParam String categoryName,
+                                                   @RequestParam(name = "page", defaultValue = "0") int page) {
+        int pageSize = 12; // Jumlah campaign per halaman
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        return campaignService.getCampaignByCategoryName(categoryName, pageRequest);
     }
 
     @GetMapping("/campaign/{campaignCode}/history")
@@ -104,4 +115,5 @@ public class CampaignController {
         List<CampaignTransactionsHistoryResponse> campaignTransactionsDTO = transactionService.getCampaignTransactionsHistory(campaign);
         return ResponseEntity.ok(campaignTransactionsDTO);
     }
+
 }

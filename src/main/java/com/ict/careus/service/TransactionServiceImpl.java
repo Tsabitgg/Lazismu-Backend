@@ -2,11 +2,11 @@ package com.ict.careus.service;
 
 import com.ict.careus.dto.request.TransactionRequest;
 import com.ict.careus.dto.response.CampaignTransactionsHistoryResponse;
+import com.ict.careus.dto.response.TransactionResponse;
 import com.ict.careus.dto.response.UserTransactionsHistoryResponse;
 import com.ict.careus.enumeration.ERole;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.transaction.Transaction;
-import com.ict.careus.model.user.Role;
 import com.ict.careus.model.user.User;
 import com.ict.careus.model.ziswaf.Infak;
 import com.ict.careus.model.ziswaf.Wakaf;
@@ -15,6 +15,8 @@ import com.ict.careus.repository.*;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -142,8 +144,14 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getAllTransaction() {
-        return transactionRepository.findAll();
+    public Page<TransactionResponse> getAllTransaction(int year, Pageable pageable) {
+        return transactionRepository.findByYear(year, pageable);
+    }
+
+
+    @Override
+    public double getTotalTransactionCount() {
+        return transactionRepository.totalTransactionCount();
     }
 
     @Override
@@ -151,6 +159,15 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionRepository.totalDonationCampaign();
     }
 
+    @Override
+    public Map<String, Double> getUserTransactionSummary(Long userId) {
+        return transactionRepository.getUserTransactionSummary(userId);
+    }
+
+    @Override
+    public Map<String, Double> getUserTransactionSummaryByYear(long userId, int year) {
+        return transactionRepository.getUserTransactionSummaryByYear(userId, year);
+    }
 
     private  List<CampaignTransactionsHistoryResponse> campaignTransactionsDTO(List<Transaction> transactions){
         List<CampaignTransactionsHistoryResponse> campaignTransactionsHistory = new ArrayList<>();
@@ -200,7 +217,6 @@ public class TransactionServiceImpl implements TransactionService {
         }
         return userTransactionsHistory;
     }
-
 
 }
 

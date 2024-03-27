@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*")
@@ -41,8 +42,15 @@ public class UserController {
         return ResponseEntity.ok(userTransactionsDTO);
     }
 
-    @GetMapping("/get-total-user")
-    public long getTotalUser(){
-        return userService.getTotalUser();
+    @GetMapping("/users/summary")
+    public ResponseEntity<Map<String, Double>> getUserTransactionSummary(@RequestParam("userId") Long userId,
+                                                                         @RequestParam(name = "year", required = false) Integer year) {
+        if (year == null) {
+            Map<String, Double> summary = transactionService.getUserTransactionSummary(userId);
+            return ResponseEntity.ok().body(summary);
+        } else {
+            Map<String, Double> summary = transactionService.getUserTransactionSummaryByYear(userId, year);
+            return ResponseEntity.ok().body(summary);
+        }
     }
 }

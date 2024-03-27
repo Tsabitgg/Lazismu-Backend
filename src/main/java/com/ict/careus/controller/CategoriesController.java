@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class CategoriesController {
 
-    @GetMapping("/campaign/category")
+    @GetMapping("/campaign/categories")
     public List<CategoryResponse> getAllCampaignCategory() {
         CampaignCategory[] campaignCategory = CampaignCategory.values();
         List<CategoryResponse> campaignCategoryResponse = new ArrayList<>();
@@ -32,7 +32,7 @@ public class CategoriesController {
         return campaignCategoryResponse;
     }
 
-    @GetMapping("/zakat/category")
+    @GetMapping("/zakat/categories")
     public List<CategoryResponse> getAllZakatCategory() {
         ZakatCategory[] zakatCategory = ZakatCategory.values();
         List<CategoryResponse> zakatCategoryResponse = new ArrayList<>();
@@ -46,7 +46,7 @@ public class CategoriesController {
         return zakatCategoryResponse;
     }
 
-    @GetMapping("/infak/category")
+    @GetMapping("/infak/categories")
     public List<CategoryResponse> getAllInfakCategory() {
         InfakCategory[] infakCategory = InfakCategory.values();
         List<CategoryResponse> infakCategoryResponse = new ArrayList<>();
@@ -60,7 +60,7 @@ public class CategoriesController {
         return infakCategoryResponse;
     }
 
-    @GetMapping("/wakaf/category")
+    @GetMapping("/wakaf/categories")
     public List<CategoryResponse> getAllWakafCategory() {
         WakafCategory[] wakafCategory = WakafCategory.values();
         List<CategoryResponse> wakafCategoryResponse = new ArrayList<>();

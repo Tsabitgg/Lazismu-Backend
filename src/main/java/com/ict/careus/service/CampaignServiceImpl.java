@@ -1,26 +1,22 @@
 package com.ict.careus.service;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.api.exceptions.BadRequest;
 import com.cloudinary.utils.ObjectUtils;
 import com.ict.careus.dto.request.CampaignRequest;
-import com.ict.careus.dto.response.MessageResponse;
 import com.ict.careus.enumeration.CampaignCategory;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.campaign.Category;
 import com.ict.careus.repository.CampaignRepository;
 import com.ict.careus.repository.CategoryRepository;
 import org.apache.coyote.BadRequestException;
-import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CampaignServiceImpl implements CampaignService{
@@ -109,8 +105,8 @@ public class CampaignServiceImpl implements CampaignService{
     }
 
     @Override
-    public List<Campaign> getAllCampaign() {
-        return campaignRepository.findAll();
+    public Page<Campaign> getAllCampaign(Pageable pageable) {
+        return campaignRepository.findAll(pageable);
     }
 
     @Override
@@ -129,13 +125,17 @@ public class CampaignServiceImpl implements CampaignService{
     }
 
     @Override
-    public List<Campaign> getCampaignByName(String campaignName) {
-        return campaignRepository.findByCampaignName(campaignName);
+    public Page<Campaign> getCampaignByName(String campaignName, Pageable pageable) {
+        return campaignRepository.findByCampaignName(campaignName, pageable);
     }
 
     @Override
-    public List<Campaign> getCampaignByCategoryName(String categoryName) {
-        return campaignRepository.findByCategoryName(CampaignCategory.valueOf(categoryName.toUpperCase()));
+    public Page<Campaign> getCampaignByCategoryName(String categoryName, Pageable pageable) {
+        return campaignRepository.findByCategoryName(CampaignCategory.valueOf(categoryName.toUpperCase()), pageable);
     }
 
+    @Override
+    public Page<Campaign> getCampaignsByYear(int year, Pageable pageable) {
+        return campaignRepository.findByYear(year, pageable);
+    }
 }

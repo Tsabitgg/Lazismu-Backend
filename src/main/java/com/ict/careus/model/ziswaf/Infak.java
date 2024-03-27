@@ -20,4 +20,5 @@ public class Infak {
     private InfakCategory infakCategory;
     private double amount;
     private double distribution;
+    private String vaNumber;
 }

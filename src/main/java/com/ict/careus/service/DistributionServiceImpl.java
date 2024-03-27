@@ -41,10 +41,10 @@ public class DistributionServiceImpl implements DistributionService {
     private ModelMapper modelMapper;
 
     @Override
-    public Distribution createDistribution(String type, String code, DistributionRequest distributionRequest) {
+    public Distribution createDistribution(String distributionType, String code, DistributionRequest distributionRequest) {
         Distribution distribution = modelMapper.map(distributionRequest, Distribution.class);
 
-        switch (type) {
+        switch (distributionType) {
             case "campaign":
                 Campaign campaign = campaignRepository.findByCampaignCode(code);
                 if (campaign != null) {
@@ -82,7 +82,7 @@ public class DistributionServiceImpl implements DistributionService {
                 }
                 break;
             default:
-                throw new IllegalArgumentException("Invalid distribution type: " + type);
+                throw new IllegalArgumentException("Invalid distribution distributionType: " + distributionType);
         }
 
         if (distributionRequest.getImage() != null && !distributionRequest.getImage().isEmpty()) {
@@ -96,7 +96,7 @@ public class DistributionServiceImpl implements DistributionService {
                 throw new RuntimeException("Failed to upload image.", e);
             }
         }
-
+        distribution.setCategory(distributionType);
         return distributionRepository.save(distribution);
     }
 }
