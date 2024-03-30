@@ -1,5 +1,6 @@
 package com.ict.careus.security;
 
+import com.ict.careus.enumeration.ERole;
 import com.ict.careus.security.jwt.AuthEntryPointJwt;
 import com.ict.careus.security.jwt.AuthTokenFilter;
 import com.ict.careus.service.UserDetailsServiceImpl;
@@ -62,23 +63,12 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .sessionFixation().none())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**", "/api/transaction/**").permitAll()
-                                .requestMatchers("/api/user/edit-profile").authenticated() // Hanya pengguna yang login yang dapat mengakses endpoint ini
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/api/admin/create-campaign").hasRole("ADMIN") // Menambahkan request matcher untuk createCampaign
+                        auth.anyRequest().permitAll()
                 );
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .inMemoryAuthentication()
-                .withUser("admin").password("{noop}password").roles("ADMIN"); // Example admin user with password "password"
     }
 }
