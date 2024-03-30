@@ -63,10 +63,7 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .sessionFixation().none())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**", "/api/transaction/**").permitAll()
-                                .requestMatchers("/api/user/**").hasAuthority(ERole.USER.name()) // Hanya pengguna yang login yang dapat mengakses endpoint ini
-                                .requestMatchers("/api/admin/**").hasAuthority(ERole.ADMIN.name())
-                                .anyRequest().authenticated()
+                        auth.anyRequest().permitAll()
                 );
 
         http.authenticationProvider(authenticationProvider());
