@@ -13,6 +13,7 @@ import com.ict.careus.repository.CategoryRepository;
 import com.ict.careus.repository.UserRepository;
 import com.ict.careus.security.jwt.JwtTokenExtractor;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ public class CampaignServiceImpl implements CampaignService{
     private UserRepository userRepository;
 
     @Override
+    @Transactional
     public Campaign createCampaign(CampaignRequest campaignRequest) throws BadRequestException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
@@ -64,10 +66,9 @@ public class CampaignServiceImpl implements CampaignService{
         }
 
         // Pastikan pengguna memiliki peran "ADMIN"
-        if (!existingUser.getRole().equals("ADMIN")) {
+        if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
             throw new BadRequestException("Only ADMIN users can create campaigns");
         }
-
 
         Category category = categoryRepository.findById(campaignRequest.getCategoryId()).orElseThrow(() -> new BadRequestException("Category not found"));
         Campaign campaign = modelMapper.map(campaignRequest, Campaign.class);
@@ -98,7 +99,27 @@ public class CampaignServiceImpl implements CampaignService{
 
 
     @Override
+    @Transactional
     public Campaign updateCampaign(String campaignCode, CampaignRequest campaignRequest) throws BadRequestException {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        // Baca token dari cookie
+        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
+
+        // Validasi token dan ambil phoneNumber dari token
+        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
+
+        // Cari pengguna berdasarkan phoneNumber
+        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
+        if (existingUser == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        // Pastikan pengguna memiliki peran "ADMIN"
+        if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
+            throw new BadRequestException("Only ADMIN users can update campaigns");
+        }
+
         Campaign updateCampaign = campaignRepository.findByCampaignCode(campaignCode);
 
         if (updateCampaign != null) {
@@ -125,9 +146,9 @@ public class CampaignServiceImpl implements CampaignService{
                     String imageUrl = uploadResult.get("url").toString();
                     updateCampaign.setCampaignImage(imageUrl);
                 } catch (IOException e) {
-                    throw new BadRequestException("Error uploading image", e);
-                }
+                    e.printStackTrace();
             }
+        }
 
             String baseUrl = "www.careus.com/campaign/";
             updateCampaign.setGenerateLink(baseUrl + updateCampaign.getCampaignCode());
@@ -136,6 +157,30 @@ public class CampaignServiceImpl implements CampaignService{
         } else {
             throw new BadRequestException("Campaign not found!");
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteCampaign(long campaignId) throws BadRequestException {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        // Baca token dari cookie
+        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
+
+        // Validasi token dan ambil phoneNumber dari token
+        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
+
+        // Cari pengguna berdasarkan phoneNumber
+        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
+        if (existingUser == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        // Pastikan pengguna memiliki peran "ADMIN"
+        if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
+            throw new BadRequestException("Only ADMIN users can delete campaigns");
+        }
+        campaignRepository.deleteById(campaignId);
     }
 
     @Override

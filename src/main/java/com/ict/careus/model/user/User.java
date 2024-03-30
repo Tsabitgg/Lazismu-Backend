@@ -2,8 +2,8 @@ package com.ict.careus.model.user;
 
 import java.util.Date;
 
-import com.ict.careus.enumeration.ERole;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,8 +25,10 @@ public class User {
 
     private String username;
 
+    @Size(min = 12, max = 13)
     private String phoneNumber;
 
+    @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
     private String profilePicture;

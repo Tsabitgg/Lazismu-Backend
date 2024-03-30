@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.ict.careus.model.user.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,7 +37,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public static UserDetailsImpl build(User user) {
-        Set<GrantedAuthority> authorities = new HashSet<>();
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().getName().name()));
 
         return new UserDetailsImpl(
@@ -49,14 +50,16 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return authorities.stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+                .collect(Collectors.toList());
     }
 
     public long getId() {
         return id;
     }
 
-    public String getNoPhone() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 

@@ -59,11 +59,17 @@ public class UserServiceImpl implements UserService{
         if (existingUser == null) {
             throw new RuntimeException("User not found");
         }
+
         existingUser.setUsername(editProfileRequest.getUsername());
         existingUser.setPhoneNumber(editProfileRequest.getPhoneNumber());
         existingUser.setPassword(encoder.encode(editProfileRequest.getPassword()));
         existingUser.setAddress(editProfileRequest.getAddress());
         existingUser.getRole();
+
+        // Validasi username dan phoneNumber
+        if (editProfileRequest.getUsername() == null || editProfileRequest.getPhoneNumber() == null) {
+            throw new RuntimeException("Username and phoneNumber cannot be null");
+        }
 
         if (editProfileRequest.getProfilePicture() != null && !editProfileRequest.getProfilePicture().isEmpty()) {
             try {

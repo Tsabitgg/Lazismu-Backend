@@ -3,14 +3,23 @@ package com.ict.careus.controller;
 import com.ict.careus.dto.request.LoginRequest;
 import com.ict.careus.dto.request.SignupRequest;
 import com.ict.careus.dto.response.JwtResponse;
+import com.ict.careus.dto.response.MessageResponse;
 import com.ict.careus.model.user.User;
 import com.ict.careus.service.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*")
+@Validated
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -19,14 +28,28 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signin")
-    public ResponseEntity<JwtResponse> authenticateUser(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         JwtResponse jwtResponse = authService.authenticateUser(loginRequest, response);
         return ResponseEntity.ok(jwtResponse);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<User> registerUser(@RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<User> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         User user = authService.registerUser(signUpRequest);
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/logout")
+    public MessageResponse logout(HttpServletRequest request, HttpServletResponse response) {
+        SecurityContextHolder.clearContext();
+        ResponseCookie jwtCookie = ResponseCookie.from("JWT_TOKEN", null)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("None")
+                .maxAge(0)
+                .build();
+        response.setHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+        return new MessageResponse("Logout Successfully");
     }
 }

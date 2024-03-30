@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/")
+@RequestMapping("/api/summary")
 public class SummaryController {
 
     @Autowired
     private SummaryService summaryService;
 
-    @GetMapping("/summary")
+    @GetMapping
     public ResponseEntity<SummaryResponse> getSummary(@RequestParam(name = "year", required = false) Integer year) {
         SummaryResponse summary = summaryService.getSummary(year);
         return ResponseEntity.ok().body(summary);

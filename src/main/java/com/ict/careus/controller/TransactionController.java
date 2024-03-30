@@ -23,9 +23,9 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
-    @PostMapping("/transaction/create")
-    public ResponseEntity<?> createTransaction(@RequestParam String transactionType,
-                                               @RequestParam String code,
+    @PostMapping("/transaction/{transactionType}/{code}")
+    public ResponseEntity<?> createTransaction(@PathVariable String transactionType,
+                                               @PathVariable String code,
                                                @RequestBody TransactionRequest transactionRequest) {
         try {
             Transaction transaction = transactionService.createTransaction(transactionType, code, transactionRequest);
@@ -35,9 +35,14 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("admin/get-all-transactions")
+    @GetMapping("/total-transaction-count")
+    public double getTotalTransactionCount(){
+        return transactionService.getTotalTransactionCount();
+    }
+
+    @GetMapping("/admin/get-all-transactions")
     public ResponseEntity<Page<TransactionResponse>> getAllTransactions(@RequestParam(name = "year", required = false) Integer year,
-                                                @RequestParam(name = "page", defaultValue = "0") int page){
+                                                                        @RequestParam(name = "page", defaultValue = "0") int page){
         int pageSize = 12;
         PageRequest pageRequest = PageRequest.of(page, pageSize);
 
@@ -48,16 +53,6 @@ public class TransactionController {
         Page<TransactionResponse> transactions = transactionService.getAllTransaction(year, pageRequest);
 
         return ResponseEntity.ok().body(transactions);
-    }
-
-    @GetMapping("/campaign/total-donation")
-    public double getTotalDonationCampaign(){
-        return transactionService.getTotalDonationCampaign();
-    }
-
-    @GetMapping("/total-transaction-count")
-    public double getTotalTransactionCount(){
-        return transactionService.getTotalTransactionCount();
     }
 }
 

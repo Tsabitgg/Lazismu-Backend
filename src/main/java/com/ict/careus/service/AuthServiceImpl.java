@@ -3,7 +3,6 @@ package com.ict.careus.service;
 import com.ict.careus.dto.request.LoginRequest;
 import com.ict.careus.dto.request.SignupRequest;
 import com.ict.careus.dto.response.JwtResponse;
-import com.ict.careus.dto.response.MessageResponse;
 import com.ict.careus.enumeration.ERole;
 import com.ict.careus.model.user.Role;
 import com.ict.careus.model.user.User;
@@ -14,17 +13,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,12 +69,14 @@ public class AuthServiceImpl implements AuthService {
 
         // Ambil daftar peran pengguna
         List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
+                .map(authority -> ((SimpleGrantedAuthority) authority).getAuthority())
                 .collect(Collectors.toList());
 
+
         // Buat dan kembalikan respons JWT
-        return new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getNoPhone(), roles);
+        return new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getPhoneNumber(), roles);
     }
+
 
 
     @Override

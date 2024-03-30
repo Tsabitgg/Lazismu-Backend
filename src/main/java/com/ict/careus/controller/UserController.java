@@ -1,11 +1,13 @@
 package com.ict.careus.controller;
 
 import com.ict.careus.dto.request.EditProfileRequest;
+import com.ict.careus.dto.response.MessageResponse;
 import com.ict.careus.dto.response.UserTransactionsHistoryResponse;
 import com.ict.careus.model.transaction.Transaction;
 import com.ict.careus.model.user.User;
 import com.ict.careus.service.TransactionService;
 import com.ict.careus.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,31 +35,25 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/user/{id}/history")
-    public ResponseEntity<List<UserTransactionsHistoryResponse>> getUserTransactionsHistory(@PathVariable long id) {
-        Optional<User> userOptional = userService.findById(id);
-        if (!userOptional.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        User user = userOptional.get();
-        List<UserTransactionsHistoryResponse> userTransactionsDTO = transactionService.getUserTransactionsHistory(user);
+    @GetMapping("/user/history")
+    public ResponseEntity<List<UserTransactionsHistoryResponse>> getUserTransactionsHistory() {
+        List<UserTransactionsHistoryResponse> userTransactionsDTO = transactionService.getUserTransactionsHistory();
         return ResponseEntity.ok(userTransactionsDTO);
     }
 
     @GetMapping("/user/summary")
-    public ResponseEntity<Map<String, Double>> getUserTransactionSummary(@RequestParam("userId") Long userId,
-                                                                         @RequestParam(name = "year", required = false) Integer year) {
+    public ResponseEntity<Map<String, Double>> getUserTransactionSummary(@RequestParam(name = "year", required = false) Integer year) {
         if (year == null) {
-            Map<String, Double> summary = transactionService.getUserTransactionSummary(userId);
+            Map<String, Double> summary = transactionService.getUserTransactionSummary();
             return ResponseEntity.ok().body(summary);
         } else {
-            Map<String, Double> summary = transactionService.getUserTransactionSummaryByYear(userId, year);
+            Map<String, Double> summary = transactionService.getUserTransactionSummaryByYear(year);
             return ResponseEntity.ok().body(summary);
         }
     }
 
     @PutMapping("user/edit-profile")
-    public ResponseEntity<User> editProfile(@ModelAttribute EditProfileRequest editProfileRequest) throws BadRequestException {
-        return ResponseEntity.ok().body(userService.editProfile(editProfileRequest));
+    public MessageResponse editProfile(@ModelAttribute EditProfileRequest editProfileRequest) throws BadRequestException {
+        return new MessageResponse("profile updated successfully");
     }
 }

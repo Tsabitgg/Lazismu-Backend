@@ -9,6 +9,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
     JwtResponse authenticateUser(LoginRequest loginRequest, HttpServletResponse response);
-
     User registerUser(SignupRequest signUpRequest);
 }

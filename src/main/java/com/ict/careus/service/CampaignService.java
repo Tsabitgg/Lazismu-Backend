@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface CampaignService {
     Campaign createCampaign(CampaignRequest campaignRequest) throws BadRequestException;
     Campaign updateCampaign(String campaignCode, CampaignRequest campaignRequest) throws BadRequestException;
+    void deleteCampaign(long campaignId) throws BadRequestException;
     Page<Campaign> getAllCampaign(Pageable pageable);
     List<Campaign> getCampaignActive(boolean isActive);
     Optional<Campaign> getCampaignByCode(String campaignCode);

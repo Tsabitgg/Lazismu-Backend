@@ -10,8 +10,6 @@ import java.util.Optional;
 public interface UserService {
 
     List<User> getAllUser();
-
     Optional<User> findById(Long id);
-
     User editProfile (EditProfileRequest editProfileRequest) throws BadRequestException;
 }

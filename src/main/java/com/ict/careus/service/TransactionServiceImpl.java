@@ -82,6 +82,12 @@ public class TransactionServiceImpl implements TransactionService {
             user = userRepository.findByPhoneNumber(phoneNumber);
         }
 
+        // Validasi username dan phoneNumber
+        if (user == null && (transactionRequest.getUsername() == null || transactionRequest.getPhoneNumber() == null)) {
+            throw new RuntimeException("Username and phoneNumber cannot be null for new user");
+        }
+
+
         // Jika pengguna tidak ditemukan, buat pengguna baru
         if (user == null) {
             user = new User();
@@ -192,12 +198,43 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Map<String, Double> getUserTransactionSummary(Long userId) {
+    public Map<String, Double> getUserTransactionSummary() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        // Baca token dari cookie
+        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
+
+        // Validasi token dan ambil email pengguna dari token
+        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
+
+        // Cari pengguna berdasarkan email
+        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
+        if (existingUser == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        long userId = existingUser.getId();
+
         return transactionRepository.getUserTransactionSummary(userId);
     }
 
     @Override
-    public Map<String, Double> getUserTransactionSummaryByYear(long userId, int year) {
+    public Map<String, Double> getUserTransactionSummaryByYear(int year) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        // Baca token dari cookie
+        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
+
+        // Validasi token dan ambil email pengguna dari token
+        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
+
+        // Cari pengguna berdasarkan email
+        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
+        if (existingUser == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        long userId = existingUser.getId();
         return transactionRepository.getUserTransactionSummaryByYear(userId, year);
     }
 
@@ -216,8 +253,21 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<UserTransactionsHistoryResponse> getUserTransactionsHistory(User user) {
-        List<Transaction> userTransactions = transactionRepository.findByUser(user);
+    public List<UserTransactionsHistoryResponse> getUserTransactionsHistory() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        // Baca token dari cookie
+        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
+
+        // Validasi token dan ambil email pengguna dari token
+        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
+
+        // Cari pengguna berdasarkan email
+        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
+        if (existingUser == null) {
+            throw new RuntimeException("User not found");
+        }
+        List<Transaction> userTransactions = transactionRepository.findByUser(existingUser);
         return userTransacctionsDTO(userTransactions);
     }
 

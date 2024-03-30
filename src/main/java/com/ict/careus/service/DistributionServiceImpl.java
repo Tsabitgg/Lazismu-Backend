@@ -3,15 +3,22 @@ package com.ict.careus.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ict.careus.dto.request.DistributionRequest;
+import com.ict.careus.enumeration.ERole;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.transaction.Distribution;
+import com.ict.careus.model.user.User;
 import com.ict.careus.model.ziswaf.Infak;
 import com.ict.careus.model.ziswaf.Wakaf;
 import com.ict.careus.model.ziswaf.Zakat;
 import com.ict.careus.repository.*;
+import com.ict.careus.security.jwt.JwtTokenExtractor;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
 import java.util.Map;
@@ -40,8 +47,32 @@ public class DistributionServiceImpl implements DistributionService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private JwtTokenExtractor jwtTokenExtractor;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
-    public Distribution createDistribution(String distributionType, String code, DistributionRequest distributionRequest) {
+    public Distribution createDistribution(String distributionType, String code, DistributionRequest distributionRequest) throws BadRequestException {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        // Baca token dari cookie
+        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
+
+        // Validasi token dan ambil phoneNumber dari token
+        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
+
+        // Cari pengguna berdasarkan phoneNumber
+        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
+        if (existingUser == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        // Pastikan pengguna memiliki peran "ADMIN"
+        if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
+            throw new BadRequestException("Only ADMIN users can Distribute");
+        }
         Distribution distribution = modelMapper.map(distributionRequest, Distribution.class);
 
         switch (distributionType) {
