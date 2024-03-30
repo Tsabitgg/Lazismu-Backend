@@ -45,6 +45,22 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public User getCurrentUser(HttpServletRequest request) {
+        // Baca token dari cookie
+        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
+
+        // Validasi token dan ambil phoneNumber dari token
+        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
+
+        // Cari pengguna berdasarkan phoneNumber
+        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
+        if (existingUser == null) {
+            throw new RuntimeException("User not found");
+        }
+        return existingUser;
+    }
+
+    @Override
     public User editProfile(EditProfileRequest editProfileRequest) throws BadRequestException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 

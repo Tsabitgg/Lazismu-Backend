@@ -6,10 +6,12 @@ import com.ict.careus.dto.response.UserTransactionsHistoryResponse;
 import com.ict.careus.model.transaction.Transaction;
 import com.ict.careus.model.user.User;
 import com.ict.careus.service.TransactionService;
+import com.ict.careus.service.UserDetailsImpl;
 import com.ict.careus.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,17 @@ public class UserController {
     public ResponseEntity<List<User>> getAllUser(){
         List<User> user = userService.getAllUser();
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/user/me")
+    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+        User currentUser = userService.getCurrentUser(request);
+
+        if (currentUser != null) {
+            return ResponseEntity.ok().body(currentUser);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("User not found"));
     }
 
     @GetMapping("/user/history")
