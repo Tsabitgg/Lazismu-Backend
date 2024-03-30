@@ -7,11 +7,15 @@ import com.ict.careus.dto.response.UserTransactionsHistoryResponse;
 import com.ict.careus.enumeration.ERole;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.transaction.Transaction;
+import com.ict.careus.model.user.Role;
 import com.ict.careus.model.user.User;
 import com.ict.careus.model.ziswaf.Infak;
 import com.ict.careus.model.ziswaf.Wakaf;
 import com.ict.careus.model.ziswaf.Zakat;
 import com.ict.careus.repository.*;
+import com.ict.careus.security.jwt.JwtTokenExtractor;
+import com.ict.careus.security.jwt.JwtUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,70 +60,96 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private JwtTokenExtractor jwtTokenExtractor;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
     @Override
     public Transaction createTransaction(String transactionType, String code, TransactionRequest transactionRequest) {
-        Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
-        Optional<User> userOptional = userRepository.findByPhoneNumber(transaction.getPhoneNumber());
-        User user;
-        if (userOptional.isPresent()) {
-            user = userOptional.get();
-        } else {
-            String password = new SimpleDateFormat("yyyyMMdd").format(new Date());
-            user = new User();
-            user.setUsername(transaction.getUsername());
-            user.setPhoneNumber(transaction.getPhoneNumber());
-            String encodePassword = encoder.encode(password);
-            user.setPassword(encodePassword);
-            user.setRoles(Collections.singleton(roleRepository.findByName(ERole.USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."))));
-            userRepository.save(user);
+        // Baca token dari cookie
+        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
+
+        // Inisialisasi variabel pengguna
+        User user = null;
+
+        if (jwtToken != null && jwtUtils.validateJwtToken(jwtToken)) {
+            // Jika pengguna sudah login
+            String phoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
+            user = userRepository.findByPhoneNumber(phoneNumber);
         }
 
+        // Jika pengguna tidak ditemukan, buat pengguna baru
+        if (user == null) {
+            user = new User();
+            user.setUsername(transactionRequest.getUsername());
+            user.setPhoneNumber(transactionRequest.getPhoneNumber());
+            // Generate password sementara (bisa diganti)
+            String password = new SimpleDateFormat("yyyyMMdd").format(new Date());
+            String encodedPassword = encoder.encode(password);
+            user.setPassword(encodedPassword);
+            // Atur peran pengguna (misalnya, USER)
+            Role userRole = roleRepository.findByName(ERole.USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            user.setRole(userRole);
+            user.setCreatedAt(new Date());
+            user = userRepository.save(user);
+        }
+
+        // Buat objek transaksi
+        Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
         transaction.setUser(user);
 
+        // Melakukan switch berdasarkan tipe transaksi
         switch (transactionType) {
             case "campaign":
                 Campaign campaign = campaignRepository.findByCampaignCode(code);
                 if (campaign != null) {
                     transaction.setCampaign(campaign);
-                    break;
                 } else {
                     throw new RuntimeException("Campaign not found with code: " + code);
                 }
+                break;
             case "zakat":
                 Zakat zakat = zakatRepository.findByZakatCode(code);
                 if (zakat != null) {
                     transaction.setZakat(zakat);
-                    break;
                 } else {
                     throw new RuntimeException("Zakat not found with code: " + code);
                 }
+                break;
             case "infak":
                 Infak infak = infakRepository.findByInfakCode(code);
                 if (infak != null) {
                     transaction.setInfak(infak);
-                    break;
                 } else {
-                    throw new RuntimeException("infak not found with code: " + code);
+                    throw new RuntimeException("Infak not found with code: " + code);
                 }
+                break;
             case "wakaf":
                 Wakaf wakaf = wakafRepository.findByWakafCode(code);
                 if (wakaf != null) {
                     transaction.setWakaf(wakaf);
-                    break;
                 } else {
-                    throw new RuntimeException("wakaf not found with code: " + code);
+                    throw new RuntimeException("Wakaf not found with code: " + code);
                 }
+                break;
             default:
                 throw new IllegalArgumentException("Invalid transaction type: " + transactionType);
         }
 
+        // Atur tanggal transaksi dan kategori
         transaction.setTransactionDate(new Date());
         transaction.setCategory(transactionType);
         transaction.setSuccess(true);
+
+        // Simpan transaksi ke dalam database
         transaction = transactionRepository.save(transaction);
 
+        // Update jumlah transaksi terkait berdasarkan tipe transaksi
         switch (transactionType) {
             case "campaign":
                 transactionRepository.update_campaign_current_amount(code, transaction.getTransactionAmount());

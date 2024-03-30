@@ -4,16 +4,24 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ict.careus.dto.request.CampaignRequest;
 import com.ict.careus.enumeration.CampaignCategory;
+import com.ict.careus.enumeration.ERole;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.campaign.Category;
+import com.ict.careus.model.user.User;
 import com.ict.careus.repository.CampaignRepository;
 import com.ict.careus.repository.CategoryRepository;
+import com.ict.careus.repository.UserRepository;
+import com.ict.careus.security.jwt.JwtTokenExtractor;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
 import java.util.*;
@@ -33,8 +41,34 @@ public class CampaignServiceImpl implements CampaignService{
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private JwtTokenExtractor jwtTokenExtractor;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public Campaign createCampaign(CampaignRequest campaignRequest) throws BadRequestException {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        // Baca token dari cookie
+        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
+
+        // Validasi token dan ambil phoneNumber dari token
+        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
+
+        // Cari pengguna berdasarkan phoneNumber
+        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
+        if (existingUser == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        // Pastikan pengguna memiliki peran "ADMIN"
+        if (!existingUser.getRole().equals("ADMIN")) {
+            throw new BadRequestException("Only ADMIN users can create campaigns");
+        }
+
+
         Category category = categoryRepository.findById(campaignRequest.getCategoryId()).orElseThrow(() -> new BadRequestException("Category not found"));
         Campaign campaign = modelMapper.map(campaignRequest, Campaign.class);
         campaign.setCategory(category);

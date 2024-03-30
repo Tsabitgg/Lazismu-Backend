@@ -1,18 +1,17 @@
 package com.ict.careus.model.user;
 
-
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
-import com.ict.careus.model.user.Role;
+import com.ict.careus.enumeration.ERole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "users",
         uniqueConstraints = {
@@ -22,7 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long Id;
+    private long id;
 
     private String username;
 
@@ -30,24 +29,26 @@ public class User {
 
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(  name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    private String profilePicture;
+
+    private String address;
+
+    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id")
+    private Role role;
 
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date createdAt;
 
-    public User() {
-    }
-
-    public User(String username, String phoneNumber, String password) {
+    public User(String username, String phoneNumber, String password, String address, Role role) {
         this.username = username;
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.createdAt = new Date();
+        this.address = address;
+        this.role = role;
     }
 }

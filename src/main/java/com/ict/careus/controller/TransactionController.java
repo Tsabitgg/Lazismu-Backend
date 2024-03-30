@@ -7,6 +7,7 @@ import com.ict.careus.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,15 +23,16 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
-    @PostMapping("/transactions/{transactionType}/{code}")
-    public ResponseEntity<TransactionResponse> createTransaction(@PathVariable("transactionType") String transactionType,
-                                                                 @PathVariable("code") String code,
-                                                                 @RequestBody TransactionRequest transactionRequest) {
-        Transaction createdTransaction = transactionService.createTransaction(transactionType, code, transactionRequest);
-
-        TransactionResponse transactionResponse = new TransactionResponse(createdTransaction);
-
-        return ResponseEntity.ok().body(transactionResponse);
+    @PostMapping("/transaction/create")
+    public ResponseEntity<?> createTransaction(@RequestParam String transactionType,
+                                               @RequestParam String code,
+                                               @RequestBody TransactionRequest transactionRequest) {
+        try {
+            Transaction transaction = transactionService.createTransaction(transactionType, code, transactionRequest);
+            return ResponseEntity.ok(transaction);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping("admin/get-all-transactions")

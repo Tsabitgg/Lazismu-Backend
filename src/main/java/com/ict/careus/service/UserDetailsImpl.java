@@ -1,9 +1,9 @@
-package com.ict.careus.security.services;
+package com.ict.careus.service;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import com.ict.careus.model.user.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,9 +36,8 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority(user.getRole().getName().name()));
 
         return new UserDetailsImpl(
                 user.getId(),
