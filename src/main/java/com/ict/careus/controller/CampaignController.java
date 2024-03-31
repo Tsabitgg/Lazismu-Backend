@@ -48,7 +48,7 @@ public class CampaignController {
         }
     }
 
-    @DeleteMapping("admin/delete-campaign/{campaignId}")
+    @DeleteMapping("/admin/delete-campaign/{campaignId}")
     public MessageResponse deleteCampaign(@PathVariable long campaignId) throws BadRequestException {
         campaignService.deleteCampaign(campaignId);
         return new MessageResponse("Delete campaign successfully");
