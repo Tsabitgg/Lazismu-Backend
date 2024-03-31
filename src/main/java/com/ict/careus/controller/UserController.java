@@ -11,6 +11,7 @@ import com.ict.careus.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,9 @@ public class UserController {
         User currentUser = userService.getCurrentUser(request);
 
         if (currentUser != null) {
-            return ResponseEntity.ok().body(currentUser);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Access-Control-Allow-Origin", "*"); // Atur header Access-Control-Allow-Origin
+            return ResponseEntity.ok().headers(headers).body(currentUser);
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("User not found"));
