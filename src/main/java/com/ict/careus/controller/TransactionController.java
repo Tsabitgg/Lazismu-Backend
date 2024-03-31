@@ -15,7 +15,7 @@ import java.time.Year;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class TransactionController {
