@@ -37,7 +37,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/user/me")
+    @GetMapping("/user/my-profile")
     public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
         User currentUser = userService.getCurrentUser(request);
 
