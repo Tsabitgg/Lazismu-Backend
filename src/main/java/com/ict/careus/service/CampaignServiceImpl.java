@@ -11,18 +11,15 @@ import com.ict.careus.model.user.User;
 import com.ict.careus.repository.CampaignRepository;
 import com.ict.careus.repository.CategoryRepository;
 import com.ict.careus.repository.UserRepository;
-import com.ict.careus.security.jwt.JwtTokenExtractor;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
 import java.util.*;
@@ -43,100 +40,28 @@ public class CampaignServiceImpl implements CampaignService{
     private ModelMapper modelMapper;
 
     @Autowired
-    private JwtTokenExtractor jwtTokenExtractor;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Override
     @Transactional
     public Campaign createCampaign(CampaignRequest campaignRequest) throws BadRequestException {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
+                    .orElseThrow(() -> new BadRequestException("User not found"));
 
-        // Baca token dari cookie
-        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
-
-        // Validasi token dan ambil phoneNumber dari token
-        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
-
-        // Cari pengguna berdasarkan phoneNumber
-        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
-        if (existingUser == null) {
-            throw new RuntimeException("User not found");
-        }
-
-        // Pastikan pengguna memiliki peran "ADMIN"
-        if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
-            throw new BadRequestException("Only ADMIN users can create campaigns");
-        }
-
-        Category category = categoryRepository.findById(campaignRequest.getCategoryId()).orElseThrow(() -> new BadRequestException("Category not found"));
-        Campaign campaign = modelMapper.map(campaignRequest, Campaign.class);
-        campaign.setCategory(category);
-
-        if (campaignRepository.findByCampaignCode(campaignRequest.getCampaignCode()) != null){
-            throw new BadRequestException("Error: campaignCode is already taken!");
-        }
-
-        if (campaignRequest.getCampaignImage() != null && !campaignRequest.getCampaignImage().isEmpty()) {
-            try {
-                Map<?, ?> uploadResult = cloudinary.uploader().upload(
-                        campaignRequest.getCampaignImage().getBytes(),
-                        ObjectUtils.emptyMap());
-                String imageUrl = uploadResult.get("url").toString();
-                campaign.setCampaignImage(imageUrl);
-
-            } catch (IOException e) {
-                throw new BadRequestException("Error uploading image", e);
-            }
-        }
-
-        String baseurl = "www.careus.com/campaign/";
-        campaign.setGenerateLink(baseurl + campaign.getCampaignCode());
-
-        return campaignRepository.save(campaign);
-    }
-
-
-    @Override
-    @Transactional
-    public Campaign updateCampaign(String campaignCode, CampaignRequest campaignRequest) throws BadRequestException {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-
-        // Baca token dari cookie
-        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
-
-        // Validasi token dan ambil phoneNumber dari token
-        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
-
-        // Cari pengguna berdasarkan phoneNumber
-        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
-        if (existingUser == null) {
-            throw new RuntimeException("User not found");
-        }
-
-        // Pastikan pengguna memiliki peran "ADMIN"
-        if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
-            throw new BadRequestException("Only ADMIN users can update campaigns");
-        }
-
-        Campaign updateCampaign = campaignRepository.findByCampaignCode(campaignCode);
-
-        if (updateCampaign != null) {
-            if (!campaignCode.equals(campaignRequest.getCampaignCode()) &&
-                    campaignRepository.findByCampaignCode(campaignRequest.getCampaignCode()) != null) {
-                throw new BadRequestException("campaignCode is already taken!");
+            if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
+                throw new BadRequestException("Only ADMIN users can create campaigns");
             }
 
-            updateCampaign.setCampaignCode(campaignRequest.getCampaignCode());
-            updateCampaign.setCampaignName(campaignRequest.getCampaignName());
-            updateCampaign.setDescription(campaignRequest.getDescription());
-            updateCampaign.setLocation(campaignRequest.getLocation());
-            updateCampaign.setVaNumber(campaignRequest.getVaNumber());
-            updateCampaign.setTargetAmount(campaignRequest.getTargetAmount());
-            updateCampaign.setCurrentAmount(campaignRequest.getCurrentAmount());
-            updateCampaign.setCreator(campaignRequest.getCreator());
-            updateCampaign.setActive(campaignRequest.isActive());
+            Category category = categoryRepository.findById(campaignRequest.getCategoryId()).orElseThrow(() -> new BadRequestException("Category not found"));
+            Campaign campaign = modelMapper.map(campaignRequest, Campaign.class);
+            campaign.setCategory(category);
+
+            if (campaignRepository.findByCampaignCode(campaignRequest.getCampaignCode()) != null) {
+                throw new BadRequestException("Error: campaignCode is already taken!");
+            }
 
             if (campaignRequest.getCampaignImage() != null && !campaignRequest.getCampaignImage().isEmpty()) {
                 try {
@@ -144,43 +69,91 @@ public class CampaignServiceImpl implements CampaignService{
                             campaignRequest.getCampaignImage().getBytes(),
                             ObjectUtils.emptyMap());
                     String imageUrl = uploadResult.get("url").toString();
-                    updateCampaign.setCampaignImage(imageUrl);
+                    campaign.setCampaignImage(imageUrl);
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new BadRequestException("Error uploading image", e);
+                }
+            }
+
+            String baseurl = "www.careus.com/campaign/";
+            campaign.setGenerateLink(baseurl + campaign.getCampaignCode());
+
+            return campaignRepository.save(campaign);
+        }
+        throw new BadRequestException("Admin not found");
+    }
+
+
+    @Override
+    @Transactional
+    public Campaign updateCampaign(String campaignCode, CampaignRequest campaignRequest) throws BadRequestException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
+                    .orElseThrow(() -> new BadRequestException("User not found"));
+
+            // Pastikan pengguna memiliki peran "ADMIN"
+            if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
+                throw new BadRequestException("Only ADMIN users can update campaigns");
+            }
+
+            Campaign updateCampaign = campaignRepository.findByCampaignCode(campaignCode);
+
+            if (updateCampaign != null) {
+                if (!campaignCode.equals(campaignRequest.getCampaignCode()) &&
+                        campaignRepository.findByCampaignCode(campaignRequest.getCampaignCode()) != null) {
+                    throw new BadRequestException("campaignCode is already taken!");
+                }
+
+                updateCampaign.setCampaignCode(campaignRequest.getCampaignCode());
+                updateCampaign.setCampaignName(campaignRequest.getCampaignName());
+                updateCampaign.setDescription(campaignRequest.getDescription());
+                updateCampaign.setLocation(campaignRequest.getLocation());
+                updateCampaign.setVaNumber(campaignRequest.getVaNumber());
+                updateCampaign.setTargetAmount(campaignRequest.getTargetAmount());
+                updateCampaign.setCurrentAmount(campaignRequest.getCurrentAmount());
+                updateCampaign.setCreator(campaignRequest.getCreator());
+                updateCampaign.setActive(campaignRequest.isActive());
+
+                if (campaignRequest.getCampaignImage() != null && !campaignRequest.getCampaignImage().isEmpty()) {
+                    try {
+                        Map<?, ?> uploadResult = cloudinary.uploader().upload(
+                                campaignRequest.getCampaignImage().getBytes(),
+                                ObjectUtils.emptyMap());
+                        String imageUrl = uploadResult.get("url").toString();
+                        updateCampaign.setCampaignImage(imageUrl);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                String baseUrl = "www.careus.com/campaign/";
+                updateCampaign.setGenerateLink(baseUrl + updateCampaign.getCampaignCode());
+
+                return campaignRepository.save(updateCampaign);
+            } else {
+                throw new BadRequestException("Campaign not found!");
             }
         }
-
-            String baseUrl = "www.careus.com/campaign/";
-            updateCampaign.setGenerateLink(baseUrl + updateCampaign.getCampaignCode());
-
-            return campaignRepository.save(updateCampaign);
-        } else {
-            throw new BadRequestException("Campaign not found!");
-        }
+        throw new BadRequestException("Admin not found");
     }
 
     @Override
     @Transactional
     public void deleteCampaign(long campaignId) throws BadRequestException {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
+                    .orElseThrow(() -> new BadRequestException("User not found"));
 
-        // Baca token dari cookie
-        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
-
-        // Validasi token dan ambil phoneNumber dari token
-        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
-
-        // Cari pengguna berdasarkan phoneNumber
-        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
-        if (existingUser == null) {
-            throw new RuntimeException("User not found");
+            if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
+                throw new BadRequestException("Only ADMIN users can delete campaigns");
+            }
+            campaignRepository.deleteById(campaignId);
         }
-
-        // Pastikan pengguna memiliki peran "ADMIN"
-        if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
-            throw new BadRequestException("Only ADMIN users can delete campaigns");
-        }
-        campaignRepository.deleteById(campaignId);
     }
 
     @Override

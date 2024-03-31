@@ -7,6 +7,7 @@ import com.ict.careus.dto.response.UserTransactionsHistoryResponse;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.transaction.Transaction;
 import com.ict.careus.model.user.User;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,15 +16,15 @@ import java.util.Map;
 
 public interface TransactionService {
 
-    Transaction createTransaction(String transactionType, String code, TransactionRequest transactionRequest);
-    List<UserTransactionsHistoryResponse> getUserTransactionsHistory();
+    Transaction createTransaction(String transactionType, String code, TransactionRequest transactionRequest) throws BadRequestException;
+    List<UserTransactionsHistoryResponse> getUserTransactionsHistory() throws BadRequestException;
     List<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign);
     Page<TransactionResponse> getAllTransaction(int year, Pageable pageable);
 
     double getTotalTransactionCount();
     double getTotalDonationCampaign();
 
-    Map<String, Double> getUserTransactionSummary();
-    Map<String, Double> getUserTransactionSummaryByYear(int year);
+    Map<String, Double> getUserTransactionSummary() throws BadRequestException;
+    Map<String, Double> getUserTransactionSummaryByYear(int year) throws BadRequestException;
 
 }

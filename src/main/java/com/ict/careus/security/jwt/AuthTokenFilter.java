@@ -20,44 +20,29 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtTokenExtractor jwtTokenExtractor;
+    private JwtUtils jwtUtils;
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
-
-    @Autowired
-    private JwtUtils jwtUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String requestURI = request.getRequestURI();
-            if (!requestURI.contains("/api/auth/**")) { // Jangan otentikasi untuk endpoint signup
-                String jwt = jwtTokenExtractor.extractJwtTokenFromCookie(request);
-                if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                    String phoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwt);
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(phoneNumber);
-                    // Periksa apakah pengguna memiliki peran (role) yang sesuai
-                    if (userDetails != null && (userDetails.getAuthorities().stream()
-                            .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"))
-                            || userDetails.getAuthorities().stream()
-                            .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("USER")))) {
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities());
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder
-                                .getContext()
-                                .setAuthentication(authentication);
-                    }
-                }
+            String jwt = parseJwt(request);
+            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+                String phoneNumber = jwtUtils.getUsernameFromJwtToken(jwt);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(phoneNumber);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
             log.error("Cannot set user authentication: {}", e.getMessage());
@@ -65,5 +50,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-
+    private String parseJwt(HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            return headerAuth.substring(7);
+        }
+        return null;
+    }
 }

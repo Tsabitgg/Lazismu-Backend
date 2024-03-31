@@ -3,16 +3,21 @@ package com.ict.careus.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ict.careus.dto.request.NewsRequest;
+import com.ict.careus.enumeration.ERole;
 import com.ict.careus.enumeration.ETopic;
 import com.ict.careus.model.News;
 import com.ict.careus.model.Topic;
+import com.ict.careus.model.user.User;
 import com.ict.careus.repository.NewsRepository;
 import com.ict.careus.repository.TopicRepository;
+import com.ict.careus.repository.UserRepository;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -29,6 +34,9 @@ public class NewsServiceImpl implements NewsService{
     private TopicRepository topicRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
@@ -36,36 +44,19 @@ public class NewsServiceImpl implements NewsService{
 
     @Override
     public News createNews(NewsRequest newsRequest) throws BadRequestException {
-        Topic topic = topicRepository.findById(newsRequest.getTopic().getId()).orElseThrow(()-> new BadRequestException("Topic not found"));
-        News news = modelMapper.map(newsRequest, News.class);
-        news.setTopic(topic);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
+                    .orElseThrow(() -> new BadRequestException("User not found"));
 
-        if (newsRequest.getImage() != null && !newsRequest.getImage().isEmpty()) {
-            try {
-                Map<?, ?> uploadResult = cloudinary.uploader().upload(
-                        newsRequest.getImage().getBytes(),
-                        ObjectUtils.emptyMap());
-                String imageUrl = uploadResult.get("url").toString();
-                news.setImage(imageUrl);
-
-            } catch (IOException e) {
-                throw new BadRequestException("Error uploading image", e);
+            if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
+                throw new BadRequestException("Only ADMIN users can create campaigns");
             }
-        }
 
-        return newsRepository.save(news);
-    }
-
-    @Override
-    public News updateNews(long id, NewsRequest newsRequest) throws BadRequestException {
-        News updatedNews = newsRepository.findById(id);
-        if (updatedNews != null){
-            updatedNews.setTitle(newsRequest.getTitle());
-            updatedNews.setContent(newsRequest.getContent());
-            updatedNews.setDate(newsRequest.getDate());
-
-            Topic topic = topicRepository.findById(newsRequest.getTopic().getId()).orElseThrow(()-> new BadRequestException("Topic not found"));
-            updatedNews.setTopic(topic);
+            Topic topic = topicRepository.findById(newsRequest.getTopic().getId()).orElseThrow(() -> new BadRequestException("Topic not found"));
+            News news = modelMapper.map(newsRequest, News.class);
+            news.setTopic(topic);
 
             if (newsRequest.getImage() != null && !newsRequest.getImage().isEmpty()) {
                 try {
@@ -73,23 +64,76 @@ public class NewsServiceImpl implements NewsService{
                             newsRequest.getImage().getBytes(),
                             ObjectUtils.emptyMap());
                     String imageUrl = uploadResult.get("url").toString();
-                    updatedNews.setImage(imageUrl);
+                    news.setImage(imageUrl);
 
                 } catch (IOException e) {
                     throw new BadRequestException("Error uploading image", e);
                 }
             }
+
+            return newsRepository.save(news);
         }
-        return newsRepository.save(updatedNews);
+        throw new BadRequestException("Admin not found");
+    }
+
+    @Override
+    public News updateNews(long id, NewsRequest newsRequest) throws BadRequestException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
+                    .orElseThrow(() -> new BadRequestException("User not found"));
+
+            if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
+                throw new BadRequestException("Only ADMIN users can create campaigns");
+            }
+
+            News updatedNews = newsRepository.findById(id);
+            if (updatedNews != null) {
+                updatedNews.setTitle(newsRequest.getTitle());
+                updatedNews.setContent(newsRequest.getContent());
+                updatedNews.setDate(newsRequest.getDate());
+
+                Topic topic = topicRepository.findById(newsRequest.getTopic().getId()).orElseThrow(() -> new BadRequestException("Topic not found"));
+                updatedNews.setTopic(topic);
+
+                if (newsRequest.getImage() != null && !newsRequest.getImage().isEmpty()) {
+                    try {
+                        Map<?, ?> uploadResult = cloudinary.uploader().upload(
+                                newsRequest.getImage().getBytes(),
+                                ObjectUtils.emptyMap());
+                        String imageUrl = uploadResult.get("url").toString();
+                        updatedNews.setImage(imageUrl);
+
+                    } catch (IOException e) {
+                        throw new BadRequestException("Error uploading image", e);
+                    }
+                }
+            }
+            return newsRepository.save(updatedNews);
+        }
+        throw new BadRequestException("Admin not found");
     }
 
     @Override
     public void deleteNews(long id) throws BadRequestException {
-        News deletedNews = newsRepository.findById(id);
-        if (deletedNews == null) {
-            throw new BadRequestException("News not found");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
+                    .orElseThrow(() -> new BadRequestException("User not found"));
+
+            if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
+                throw new BadRequestException("Only ADMIN users can create campaigns");
+            }
+
+            News deletedNews = newsRepository.findById(id);
+            if (deletedNews == null) {
+                throw new BadRequestException("News not found");
+            }
+            newsRepository.delete(deletedNews);
         }
-        newsRepository.delete(deletedNews);
+        throw new BadRequestException("Admin not found");
     }
 
 

@@ -4,6 +4,7 @@ import com.ict.careus.dto.request.TransactionRequest;
 import com.ict.careus.dto.response.TransactionResponse;
 import com.ict.careus.model.transaction.Transaction;
 import com.ict.careus.service.TransactionService;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +16,7 @@ import java.time.Year;
 import java.util.List;
 import java.util.Map;
 
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class TransactionController {
@@ -30,7 +31,7 @@ public class TransactionController {
         try {
             Transaction transaction = transactionService.createTransaction(transactionType, code, transactionRequest);
             return ResponseEntity.ok(transaction);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | BadRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

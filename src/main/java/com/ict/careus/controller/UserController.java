@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -50,13 +50,13 @@ public class UserController {
     }
 
     @GetMapping("/user/history")
-    public ResponseEntity<List<UserTransactionsHistoryResponse>> getUserTransactionsHistory() {
+    public ResponseEntity<List<UserTransactionsHistoryResponse>> getUserTransactionsHistory() throws BadRequestException {
         List<UserTransactionsHistoryResponse> userTransactionsDTO = transactionService.getUserTransactionsHistory();
         return ResponseEntity.ok(userTransactionsDTO);
     }
 
     @GetMapping("/user/summary")
-    public ResponseEntity<Map<String, Double>> getUserTransactionSummary(@RequestParam(name = "year", required = false) Integer year) {
+    public ResponseEntity<Map<String, Double>> getUserTransactionSummary(@RequestParam(name = "year", required = false) Integer year) throws BadRequestException {
         Map<String, Double> summary;
         if (year == null) {
             summary = transactionService.getUserTransactionSummary();

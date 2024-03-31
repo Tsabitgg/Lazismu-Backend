@@ -5,14 +5,12 @@ import com.cloudinary.utils.ObjectUtils;
 import com.ict.careus.dto.request.EditProfileRequest;
 import com.ict.careus.model.user.User;
 import com.ict.careus.repository.UserRepository;
-import com.ict.careus.security.jwt.JwtTokenExtractor;
-import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,9 +22,6 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private JwtTokenExtractor jwtTokenExtractor;
 
     @Autowired
     private Cloudinary cloudinary;
@@ -46,60 +41,48 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getCurrentUser() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        // Baca token dari cookie
-        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
-
-        // Validasi token dan ambil phoneNumber dari token
-        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
-
-        // Cari pengguna berdasarkan phoneNumber
-        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
-        if (existingUser == null) {
-            throw new RuntimeException("User not found");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            return userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
         }
-        return existingUser;
+        throw new RuntimeException("User not found");
     }
 
     @Override
     public User editProfile(EditProfileRequest editProfileRequest) throws BadRequestException {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Baca token dari cookie
-        String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
+            existingUser.setUsername(editProfileRequest.getUsername());
+            existingUser.setPhoneNumber(editProfileRequest.getPhoneNumber());
+            existingUser.setPassword(encoder.encode(editProfileRequest.getPassword()));
+            existingUser.setAddress(editProfileRequest.getAddress());
+            existingUser.getRole();
 
-        // Validasi token dan ambil email pengguna dari token
-        String userPhoneNumber = jwtTokenExtractor.getPhoneNumberFromJwtToken(jwtToken);
-
-        // Cari pengguna berdasarkan email
-        User existingUser = userRepository.findByPhoneNumber(userPhoneNumber);
-        if (existingUser == null) {
-            throw new RuntimeException("User not found");
-        }
-
-        existingUser.setUsername(editProfileRequest.getUsername());
-        existingUser.setPhoneNumber(editProfileRequest.getPhoneNumber());
-        existingUser.setPassword(encoder.encode(editProfileRequest.getPassword()));
-        existingUser.setAddress(editProfileRequest.getAddress());
-        existingUser.getRole();
-
-        // Validasi username dan phoneNumber
-        if (editProfileRequest.getUsername() == null || editProfileRequest.getPhoneNumber() == null) {
-            throw new RuntimeException("Username and phoneNumber cannot be null");
-        }
-
-        if (editProfileRequest.getProfilePicture() != null && !editProfileRequest.getProfilePicture().isEmpty()) {
-            try {
-                Map<?, ?> uploadResult = cloudinary.uploader().upload(
-                        editProfileRequest.getProfilePicture().getBytes(),
-                        ObjectUtils.emptyMap());
-                String imageUrl = uploadResult.get("url").toString();
-                existingUser.setProfilePicture(imageUrl);
-            } catch (IOException e) {
-                throw new BadRequestException("Error uploading image", e);
+            // Validasi username dan phoneNumber
+            if (editProfileRequest.getUsername() == null || editProfileRequest.getPhoneNumber() == null) {
+                throw new RuntimeException("Username and phoneNumber cannot be null");
             }
-        }
 
-        return userRepository.save(existingUser);
+            if (editProfileRequest.getProfilePicture() != null && !editProfileRequest.getProfilePicture().isEmpty()) {
+                try {
+                    Map<?, ?> uploadResult = cloudinary.uploader().upload(
+                            editProfileRequest.getProfilePicture().getBytes(),
+                            ObjectUtils.emptyMap());
+                    String imageUrl = uploadResult.get("url").toString();
+                    existingUser.setProfilePicture(imageUrl);
+                } catch (IOException e) {
+                    throw new BadRequestException("Error uploading image", e);
+                }
+            }
+
+            return userRepository.save(existingUser);
+        }
+        throw new RuntimeException("User not found");
     }
 }

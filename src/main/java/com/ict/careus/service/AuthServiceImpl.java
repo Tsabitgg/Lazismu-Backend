@@ -16,7 +16,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,15 +57,6 @@ public class AuthServiceImpl implements AuthService {
         // Generate token JWT
         String jwt = jwtUtils.generateJwtToken(authentication);
 
-        // Set cookie JWT di header respons
-        ResponseCookie jwtCookie = ResponseCookie.from("JWT_TOKEN", jwt)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .sameSite("None")
-                .build();
-        response.setHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
-
         // Ambil daftar peran pengguna
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(authority -> ((SimpleGrantedAuthority) authority).getAuthority())
@@ -88,29 +78,25 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
             throw new RuntimeException("Error: PhoneNumber is already in use!");
         }
-        // Buat objek User dari data pendaftaran
+
         Role defaultRole = roleRepository.findByName(ERole.USER)
                 .orElseThrow(() -> new RuntimeException("Error: Default Role is not found."));
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getPhoneNumber(),
                 encoder.encode(signUpRequest.getPassword()),
                 signUpRequest.getAddress(),
-                defaultRole); // Atur peran sebagai USER secara default
+                defaultRole);
 
         user.setProfilePicture("https://res.cloudinary.com/donation-application/image/upload/v1711632747/default-avatar-icon-of-social-media-user-vector_thrtbz.jpg");
 
-        // Tambahkan peran admin jika diminta
         if (signUpRequest.getRole() != null && signUpRequest.getRole().contains("admin")) {
             Role adminRole = roleRepository.findByName(ERole.ADMIN)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             user.setRole(adminRole);
         }
 
-
-        // Simpan pengguna ke dalam basis data
         userRepository.save(user);
 
-        // Kembalikan objek User yang berhasil didaftarkan
         return user;
     }
 }

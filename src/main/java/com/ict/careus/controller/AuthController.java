@@ -18,7 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 @Validated
 @RestController
 @RequestMapping("/api/auth")
@@ -42,14 +42,6 @@ public class AuthController {
     @PostMapping("/logout")
     public MessageResponse logout(HttpServletRequest request, HttpServletResponse response) {
         SecurityContextHolder.clearContext();
-        ResponseCookie jwtCookie = ResponseCookie.from("JWT_TOKEN", null)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .sameSite("None")
-                .maxAge(0)
-                .build();
-        response.setHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
         return new MessageResponse("Logout Successfully");
     }
 }
