@@ -18,7 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*", allowedHeaders = {"Authorization", "Content-Type", "Cookie"}, allowCredentials = "true")
+@CrossOrigin(origins = "*")
 @Validated
 @RestController
 @RequestMapping("/api/auth")
