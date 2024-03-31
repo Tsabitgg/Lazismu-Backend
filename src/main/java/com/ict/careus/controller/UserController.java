@@ -57,13 +57,13 @@ public class UserController {
 
     @GetMapping("/user/summary")
     public ResponseEntity<Map<String, Double>> getUserTransactionSummary(@RequestParam(name = "year", required = false) Integer year) {
+        Map<String, Double> summary;
         if (year == null) {
-            Map<String, Double> summary = transactionService.getUserTransactionSummary();
-            return ResponseEntity.ok().body(summary);
+            summary = transactionService.getUserTransactionSummary();
         } else {
-            Map<String, Double> summary = transactionService.getUserTransactionSummaryByYear(year);
-            return ResponseEntity.ok().body(summary);
+            summary = transactionService.getUserTransactionSummaryByYear(year);
         }
+        return ResponseEntity.ok().body(summary);
     }
 
     @PutMapping("/user/edit-profile")

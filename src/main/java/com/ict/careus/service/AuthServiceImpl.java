@@ -113,6 +113,4 @@ public class AuthServiceImpl implements AuthService {
         // Kembalikan objek User yang berhasil didaftarkan
         return user;
     }
-
-
 }
