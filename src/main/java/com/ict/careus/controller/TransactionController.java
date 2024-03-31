@@ -15,7 +15,7 @@ import java.time.Year;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = {"Authorization", "Content-Type", "Cookie"}, allowCredentials = "true")
 @RestController
 @RequestMapping("/api")
 public class TransactionController {

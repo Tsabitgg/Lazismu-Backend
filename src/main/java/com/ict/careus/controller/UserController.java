@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = {"Authorization", "Content-Type", "Cookie"}, allowCredentials = "true")
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -65,7 +65,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("user/edit-profile")
+    @PutMapping("/user/edit-profile")
     public MessageResponse editProfile(@ModelAttribute EditProfileRequest editProfileRequest) throws BadRequestException {
         return new MessageResponse("profile updated successfully");
     }
