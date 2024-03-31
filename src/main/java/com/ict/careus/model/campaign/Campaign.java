@@ -1,11 +1,13 @@
 package com.ict.careus.model.campaign;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -35,15 +37,12 @@ public class Campaign {
     private double distribution;
 
     @Column(nullable = false, updatable = false)
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
 
     @Column(nullable = false, updatable = false)
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date endDate;
-
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
     @Column(columnDefinition = "BOOLEAN")
     private boolean active;
 
