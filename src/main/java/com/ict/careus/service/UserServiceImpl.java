@@ -45,7 +45,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getCurrentUser(HttpServletRequest request) {
+    public User getCurrentUser() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         // Baca token dari cookie
         String jwtToken = jwtTokenExtractor.extractJwtTokenFromCookie(request);
 

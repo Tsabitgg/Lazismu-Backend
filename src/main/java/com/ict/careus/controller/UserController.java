@@ -39,15 +39,13 @@ public class UserController {
     }
 
     @GetMapping("/user/my-profile")
-    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-        User currentUser = userService.getCurrentUser(request);
-
+    public ResponseEntity<?> getCurrentUser() {
+        User currentUser = userService.getCurrentUser();
         if (currentUser != null) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Access-Control-Allow-Origin", "*"); // Atur header Access-Control-Allow-Origin
+            headers.add("Access-Control-Allow-Origin", "*");
             return ResponseEntity.ok().headers(headers).body(currentUser);
         }
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("User not found"));
     }
 
