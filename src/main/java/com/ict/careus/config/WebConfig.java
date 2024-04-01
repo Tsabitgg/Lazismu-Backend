@@ -14,13 +14,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/user/my-profile")
-                .allowedOrigins("https://donation-application-production.up.railway.app")
+        registry.addMapping("/**")
+                .allowedOrigins("*")
                 .allowedHeaders(
                         HttpHeaders.AUTHORIZATION,
                         HttpHeaders.CONTENT_TYPE,
                         HttpHeaders.ACCEPT)
-//                .allowCredentials(true)
                 .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.POST.name(),
@@ -29,4 +28,5 @@ public class WebConfig implements WebMvcConfigurer {
                         HttpMethod.DELETE.name());
     }
 }
+
 
