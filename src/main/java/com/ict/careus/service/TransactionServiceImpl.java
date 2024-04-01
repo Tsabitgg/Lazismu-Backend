@@ -1,5 +1,6 @@
 package com.ict.careus.service;
 
+import com.google.zxing.NotFoundException;
 import com.ict.careus.dto.request.TransactionRequest;
 import com.ict.careus.dto.response.CampaignTransactionsHistoryResponse;
 import com.ict.careus.dto.response.TransactionResponse;
@@ -14,8 +15,9 @@ import com.ict.careus.model.ziswaf.Wakaf;
 import com.ict.careus.model.ziswaf.Zakat;
 import com.ict.careus.repository.*;
 import com.ict.careus.security.jwt.JwtUtils;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import net.glxn.qrgen.QRCode;
+import net.glxn.qrgen.image.ImageType;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +27,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -68,111 +69,130 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction createTransaction(String transactionType, String code, TransactionRequest transactionRequest) throws BadRequestException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
-                    .orElseThrow(() -> new BadRequestException("User not found"));
+        User user;
 
-            // Inisialisasi variabel pengguna
-            User user;
-
+        // Jika tidak ada autentikasi atau autentikasi bukan dari UserDetailsImpl, maka buat pengguna baru
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetailsImpl)) {
             // Validasi username dan phoneNumber
             if (transactionRequest.getUsername() == null || transactionRequest.getPhoneNumber() == null) {
-                throw new RuntimeException("Username and phoneNumber cannot be null for new user");
+                throw new BadRequestException("Username and phoneNumber cannot be null for new user");
             }
 
-            // Jika pengguna tidak ditemukan, buat pengguna baru
-            if (existingUser == null) {
-                user = new User();
-                user.setUsername(transactionRequest.getUsername());
-                user.setPhoneNumber(transactionRequest.getPhoneNumber());
-                // Generate password sementara (bisa diganti)
-                String password = new SimpleDateFormat("yyyyMMdd").format(new Date());
-                String encodedPassword = encoder.encode(password);
-                user.setPassword(encodedPassword);
-                // Atur peran pengguna (misalnya, USER)
-                Role userRole = roleRepository.findByName(ERole.USER)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                user.setRole(userRole);
-                user.setCreatedAt(new Date());
-                user = userRepository.save(user);
-            } else {
-                user = existingUser;
-            }
-
-            // Buat objek transaksi
-            Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
-            transaction.setUser(user);
-            transaction.setUsername(existingUser.getUsername());
-            transaction.setPhoneNumber(existingUser.getPhoneNumber());
-
-            // Melakukan switch berdasarkan tipe transaksi
-            switch (transactionType) {
-                case "campaign":
-                    Campaign campaign = campaignRepository.findByCampaignCode(code);
-                    if (campaign != null) {
-                        transaction.setCampaign(campaign);
-                    } else {
-                        throw new RuntimeException("Campaign not found with code: " + code);
-                    }
-                    break;
-                case "zakat":
-                    Zakat zakat = zakatRepository.findByZakatCode(code);
-                    if (zakat != null) {
-                        transaction.setZakat(zakat);
-                    } else {
-                        throw new RuntimeException("Zakat not found with code: " + code);
-                    }
-                    break;
-                case "infak":
-                    Infak infak = infakRepository.findByInfakCode(code);
-                    if (infak != null) {
-                        transaction.setInfak(infak);
-                    } else {
-                        throw new RuntimeException("Infak not found with code: " + code);
-                    }
-                    break;
-                case "wakaf":
-                    Wakaf wakaf = wakafRepository.findByWakafCode(code);
-                    if (wakaf != null) {
-                        transaction.setWakaf(wakaf);
-                    } else {
-                        throw new RuntimeException("Wakaf not found with code: " + code);
-                    }
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid transaction type: " + transactionType);
-            }
-
-            // Atur tanggal transaksi dan kategori
-            transaction.setTransactionDate(new Date());
-            transaction.setCategory(transactionType);
-            transaction.setSuccess(true);
-
-            // Simpan transaksi ke dalam database
-            transaction = transactionRepository.save(transaction);
-
-            // Update jumlah transaksi terkait berdasarkan tipe transaksi
-            switch (transactionType) {
-                case "campaign":
-                    transactionRepository.update_campaign_current_amount(code, transaction.getTransactionAmount());
-                    break;
-                case "zakat":
-                    transactionRepository.update_zakat_amount(code, transaction.getTransactionAmount());
-                    break;
-                case "infak":
-                    transactionRepository.update_infak_amount(code, transaction.getTransactionAmount());
-                    break;
-                case "wakaf":
-                    transactionRepository.update_wakaf_amount(code, transaction.getTransactionAmount());
-                    break;
-            }
-
-            return transaction;
+            // Buat pengguna baru
+            user = new User();
+            user.setUsername(transactionRequest.getUsername());
+            user.setPhoneNumber(transactionRequest.getPhoneNumber());
+            String password = new SimpleDateFormat("yyyyMMdd").format(new Date());
+            String encodedPassword = encoder.encode(password);
+            user.setPassword(encodedPassword);
+            Role userRole = roleRepository.findByName(ERole.USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            user.setRole(userRole);
+            user.setCreatedAt(new Date());
+            user = userRepository.save(user);
+        } else {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            user = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
+                    .orElseThrow(() -> new BadRequestException("User not found"));
         }
-        throw new BadRequestException("User not Found");
+
+        // Buat objek transaksi
+        Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
+        transaction.setUser(user);
+        transaction.setUsername(user.getUsername());
+        transaction.setPhoneNumber(user.getPhoneNumber());
+
+        // Melakukan switch berdasarkan tipe transaksi
+        switch (transactionType) {
+            case "campaign":
+                Campaign campaign = campaignRepository.findByCampaignCode(code);
+                if (campaign != null) {
+                    transaction.setCampaign(campaign);
+                } else {
+                    throw new RuntimeException("Campaign not found with code: " + code);
+                }
+                break;
+            case "zakat":
+                Zakat zakat = zakatRepository.findByZakatCode(code);
+                if (zakat != null) {
+                    transaction.setZakat(zakat);
+                } else {
+                    throw new RuntimeException("Zakat not found with code: " + code);
+                }
+                break;
+            case "infak":
+                Infak infak = infakRepository.findByInfakCode(code);
+                if (infak != null) {
+                    transaction.setInfak(infak);
+                } else {
+                    throw new RuntimeException("Infak not found with code: " + code);
+                }
+                break;
+            case "wakaf":
+                Wakaf wakaf = wakafRepository.findByWakafCode(code);
+                if (wakaf != null) {
+                    transaction.setWakaf(wakaf);
+                } else {
+                    throw new RuntimeException("Wakaf not found with code: " + code);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid transaction type: " + transactionType);
+        }
+
+        // Atur tanggal transaksi dan kategori
+        transaction.setTransactionDate(new Date());
+        transaction.setCategory(transactionType);
+        transaction.setSuccess(true);
+
+        // Simpan transaksi ke dalam database
+        transaction = transactionRepository.save(transaction);
+
+    // Update jumlah transaksi terkait berdasarkan tipe transaksi
+        switch (transactionType) {
+            case "campaign":
+                transactionRepository.update_campaign_current_amount(code, transaction.getTransactionAmount());
+                break;
+            case "zakat":
+                transactionRepository.update_zakat_amount(code, transaction.getTransactionAmount());
+                break;
+            case "infak":
+                transactionRepository.update_infak_amount(code, transaction.getTransactionAmount());
+                break;
+            case "wakaf":
+                transactionRepository.update_wakaf_amount(code, transaction.getTransactionAmount());
+                break;
+        }
+
+        return transaction;
     }
 
+    @Override
+    public byte[] generateQRCode(long transactionId) throws BadRequestException {
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new BadRequestException("Transaction not found"));
+
+        String vaNumber = null;
+
+        switch (transaction.getCategory()) {
+            case "campaign":
+                vaNumber = transaction.getCampaign().getVaNumber();
+                break;
+            case "zakat":
+                vaNumber = transaction.getZakat().getVaNumber();
+                break;
+            case "infak":
+                vaNumber = transaction.getInfak().getVaNumber();
+                break;
+            case "wakaf":
+                vaNumber = transaction.getWakaf().getVaNumber();
+                break;
+        }
+
+        // Generate QR Code
+        ByteArrayOutputStream stream = QRCode.from(vaNumber).to(ImageType.PNG).stream();
+        return stream.toByteArray();
+    }
 
 
     @Override
@@ -224,6 +244,11 @@ public class TransactionServiceImpl implements TransactionService {
             return transactionRepository.getUserTransactionSummaryByYear(userId, year);
         }
         throw new BadRequestException("User not found");
+    }
+
+    @Override
+    public Optional<Transaction> getTransactionById(long transactionId) {
+        return transactionRepository.findById(transactionId);
     }
 
     private  List<CampaignTransactionsHistoryResponse> campaignTransactionsDTO(List<Transaction> transactions){

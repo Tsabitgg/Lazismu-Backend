@@ -1,5 +1,6 @@
 package com.ict.careus.controller;
 
+import com.google.zxing.NotFoundException;
 import com.ict.careus.dto.request.TransactionRequest;
 import com.ict.careus.dto.response.TransactionResponse;
 import com.ict.careus.model.transaction.Transaction;
@@ -9,12 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
 import java.time.Year;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -35,6 +40,22 @@ public class TransactionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @GetMapping("/qr/{transactionId}")
+    public ResponseEntity<?> getQRCode(@PathVariable long transactionId) {
+        try {
+            byte[] qrCode = transactionService.generateQRCode(transactionId);
+            // Mengubah byte array menjadi InputStream
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(qrCode);
+            // Membaca sebagai gambar PNG
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body(inputStream.readAllBytes());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 
     @GetMapping("/total-transaction-count")
     public double getTotalTransactionCount(){

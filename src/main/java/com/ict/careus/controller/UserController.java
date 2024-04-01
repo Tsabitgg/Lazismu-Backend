@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -42,9 +41,7 @@ public class UserController {
     public ResponseEntity<?> getCurrentUser() {
         User currentUser = userService.getCurrentUser();
         if (currentUser != null) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Access-Control-Allow-Origin", "*");
-            return ResponseEntity.ok().headers(headers).body(currentUser);
+            return ResponseEntity.ok().body(currentUser);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("User not found"));
     }
