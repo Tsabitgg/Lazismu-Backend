@@ -1,6 +1,5 @@
 package com.ict.careus.controller;
 
-import com.google.zxing.NotFoundException;
 import com.ict.careus.dto.request.TransactionRequest;
 import com.ict.careus.dto.response.TransactionResponse;
 import com.ict.careus.model.transaction.Transaction;
@@ -16,10 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.time.Year;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @CrossOrigin
 @RestController

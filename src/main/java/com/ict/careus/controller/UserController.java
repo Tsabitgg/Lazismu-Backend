@@ -39,12 +39,13 @@ public class UserController {
     }
 
     @GetMapping("/user/my-profile")
-    public ResponseEntity<?> getCurrentUser() {
-        User currentUser = userService.getCurrentUser();
-        if (currentUser != null) {
-            return ResponseEntity.ok().body(currentUser);
+    public ResponseEntity<?> getCurrentUser() throws BadRequestException {
+        try{
+            User currentUser = userService.getCurrentUser();
+            return new ResponseEntity<>(currentUser, HttpStatus.OK);
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body("Error " + e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse("User not found"));
     }
 
     @GetMapping("/user/history")
@@ -65,7 +66,12 @@ public class UserController {
     }
 
     @PutMapping("/user/edit-profile")
-    public MessageResponse editProfile(@ModelAttribute EditProfileRequest editProfileRequest) throws BadRequestException {
-        return new MessageResponse("profile updated successfully");
+    public ResponseEntity<?> editProfile(@ModelAttribute EditProfileRequest editProfileRequest) throws BadRequestException {
+        try{
+            User updatedUser = userService.editProfile(editProfileRequest);
+            return new ResponseEntity<>(updatedUser, HttpStatus.CREATED);
+        } catch (BadRequestException e){
+            return ResponseEntity.badRequest().body("Error: "+e.getMessage());
+        }
     }
 }

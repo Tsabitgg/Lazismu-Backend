@@ -14,7 +14,9 @@ public interface CampaignService {
     Campaign updateCampaign(String campaignCode, CampaignRequest campaignRequest) throws BadRequestException;
     void deleteCampaign(long campaignId) throws BadRequestException;
     Page<Campaign> getAllCampaign(Pageable pageable);
+
     List<Campaign> getCampaignActive(boolean isActive);
+
     Optional<Campaign> getCampaignByCode(String campaignCode);
     Optional<Campaign> getCampaignById(long campaignId);
     Page<Campaign> getCampaignByName(String campaignName, Pageable pageable);

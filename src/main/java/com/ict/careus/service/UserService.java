@@ -13,7 +13,7 @@ public interface UserService {
     List<User> getAllUser();
     Optional<User> findById(Long id);
 
-    User getCurrentUser();
+    User getCurrentUser() throws BadRequestException;
 
     User editProfile (EditProfileRequest editProfileRequest) throws BadRequestException;
 }

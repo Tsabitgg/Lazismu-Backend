@@ -2,6 +2,7 @@ package com.ict.careus.model.user;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -41,8 +42,7 @@ public class User {
     private Role role;
 
     @Column(nullable = false, updatable = false)
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date createdAt;
 
     public User(String username, String phoneNumber, String password, String address, Role role) {

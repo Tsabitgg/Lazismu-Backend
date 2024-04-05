@@ -40,14 +40,14 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getCurrentUser() {
+    public User getCurrentUser() throws BadRequestException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             return userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new BadRequestException("User not found"));
         }
-        throw new RuntimeException("User not found");
+        throw new BadRequestException("User not found");
     }
 
     @Override
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService{
         if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new BadRequestException("User not found"));
 
             existingUser.setUsername(editProfileRequest.getUsername());
             existingUser.setPhoneNumber(editProfileRequest.getPhoneNumber());
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService{
 
             // Validasi username dan phoneNumber
             if (editProfileRequest.getUsername() == null || editProfileRequest.getPhoneNumber() == null) {
-                throw new RuntimeException("Username and phoneNumber cannot be null");
+                throw new BadRequestException("Username and phoneNumber cannot be null");
             }
 
             if (editProfileRequest.getProfilePicture() != null && !editProfileRequest.getProfilePicture().isEmpty()) {
@@ -83,6 +83,6 @@ public class UserServiceImpl implements UserService{
 
             return userRepository.save(existingUser);
         }
-        throw new RuntimeException("User not found");
+        throw new BadRequestException("User not found");
     }
 }
