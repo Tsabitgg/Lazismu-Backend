@@ -58,15 +58,17 @@ public class UserServiceImpl implements UserService{
             User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
                     .orElseThrow(() -> new BadRequestException("User not found"));
 
-            existingUser.setUsername(editProfileRequest.getUsername());
-            existingUser.setPhoneNumber(editProfileRequest.getPhoneNumber());
-            existingUser.setPassword(encoder.encode(editProfileRequest.getPassword()));
-            existingUser.setAddress(editProfileRequest.getAddress());
-            existingUser.getRole();
-
-            // Validasi username dan phoneNumber
-            if (editProfileRequest.getUsername() == null || editProfileRequest.getPhoneNumber() == null) {
-                throw new BadRequestException("Username and phoneNumber cannot be null");
+            if (editProfileRequest.getUsername() != null) {
+                existingUser.setUsername(editProfileRequest.getUsername());
+            }
+            if (editProfileRequest.getPhoneNumber() != null) {
+                existingUser.setPhoneNumber(editProfileRequest.getPhoneNumber());
+            }
+            if (editProfileRequest.getPassword() != null) {
+                existingUser.setPassword(encoder.encode(editProfileRequest.getPassword()));
+            }
+            if (editProfileRequest.getAddress() != null) {
+                existingUser.setAddress(editProfileRequest.getAddress());
             }
 
             if (editProfileRequest.getProfilePicture() != null && !editProfileRequest.getProfilePicture().isEmpty()) {
@@ -80,7 +82,6 @@ public class UserServiceImpl implements UserService{
                     throw new BadRequestException("Error uploading image", e);
                 }
             }
-
             return userRepository.save(existingUser);
         }
         throw new BadRequestException("User not found");
