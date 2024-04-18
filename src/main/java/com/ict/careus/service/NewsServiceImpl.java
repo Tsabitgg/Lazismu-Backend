@@ -54,9 +54,14 @@ public class NewsServiceImpl implements NewsService{
                 throw new BadRequestException("Only ADMIN users can create campaigns");
             }
 
-            Topic topic = topicRepository.findById(newsRequest.getTopic().getId()).orElseThrow(() -> new BadRequestException("Topic not found"));
+            Topic topic = topicRepository.findById(newsRequest.getTopic().getId())
+                    .orElseThrow(() -> new BadRequestException("Topic not found"));
             News news = modelMapper.map(newsRequest, News.class);
             news.setTopic(topic);
+
+            if (newsRequest.getContent() == null || newsRequest.getContent().isEmpty()) {
+                throw new BadRequestException("Content cannot be empty");
+            }
 
             if (newsRequest.getImage() != null && !newsRequest.getImage().isEmpty()) {
                 try {

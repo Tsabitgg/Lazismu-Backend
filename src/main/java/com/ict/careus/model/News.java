@@ -21,6 +21,8 @@ public class News {
     private long id;
 
     private String title;
+
+    @Column(columnDefinition = "TEXT")
     private String content;
     private String image;
 
