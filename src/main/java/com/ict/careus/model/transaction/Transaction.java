@@ -1,5 +1,6 @@
 package com.ict.careus.model.transaction;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ict.careus.model.user.User;
 import com.ict.careus.model.campaign.Campaign;
@@ -34,6 +35,9 @@ public class Transaction {
     private String phoneNumber;
     private double transactionAmount;
     private String message;
+
+    @Column(nullable = false, updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date transactionDate;
     private boolean success;
 

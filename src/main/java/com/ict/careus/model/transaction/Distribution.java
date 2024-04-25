@@ -1,5 +1,6 @@
 package com.ict.careus.model.transaction;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.ziswaf.Infak;
 import com.ict.careus.model.ziswaf.Wakaf;
@@ -24,6 +25,8 @@ public class Distribution {
 
     private double distributionAmount;
 
+    @Column(nullable = false, updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date distributionDate;
 
     private String receiver;
