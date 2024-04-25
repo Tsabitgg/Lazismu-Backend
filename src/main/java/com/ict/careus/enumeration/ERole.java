@@ -1,6 +1,7 @@
 package com.ict.careus.enumeration;
 
 public enum ERole {
-    USER,
-    ADMIN
+    ADMIN,
+    SUB_ADMIN,
+    USER
 }
