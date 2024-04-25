@@ -2,6 +2,8 @@ package com.ict.careus.controller;
 
 import com.ict.careus.dto.request.NewsRequest;
 import com.ict.careus.dto.response.MessageResponse;
+import com.ict.careus.dto.response.TopicResponse;
+import com.ict.careus.enumeration.ETopic;
 import com.ict.careus.model.News;
 import com.ict.careus.service.NewsService;
 import org.apache.coyote.BadRequestException;
@@ -12,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin
@@ -76,5 +80,19 @@ public class NewsController {
         int pageSize = 12; // Jumlah campaign per halaman
         PageRequest pageRequest = PageRequest.of(page, pageSize);
         return newsService.getNewsByTopicName(topicName, pageRequest);
+    }
+
+    @GetMapping("/news/all-topic")
+    public List<TopicResponse> getAllNewsTopic() {
+        ETopic[] topic = ETopic.values();
+        List<TopicResponse> newsTopicResponse = new ArrayList<>();
+
+        for (int i = 0; i < topic.length; i++) {
+            TopicResponse campaignCategoryDTO = new TopicResponse();
+            campaignCategoryDTO.setId(i + 1);
+            campaignCategoryDTO.setTopicName(topic[i].toString());
+            newsTopicResponse.add(campaignCategoryDTO);
+        }
+        return newsTopicResponse;
     }
 }
