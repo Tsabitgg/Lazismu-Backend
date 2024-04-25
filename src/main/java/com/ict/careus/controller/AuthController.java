@@ -10,6 +10,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -34,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<User> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<User> registerUser(@Valid @RequestBody SignupRequest signUpRequest) throws BadRequestException {
         User user = authService.registerUser(signUpRequest);
         return ResponseEntity.ok(user);
     }

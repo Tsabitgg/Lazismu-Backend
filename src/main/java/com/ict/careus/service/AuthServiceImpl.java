@@ -10,6 +10,7 @@ import com.ict.careus.repository.RoleRepository;
 import com.ict.careus.repository.UserRepository;
 import com.ict.careus.security.jwt.JwtUtils;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -70,17 +71,18 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public User registerUser(SignupRequest signUpRequest) {
+    public User registerUser(SignupRequest signUpRequest) throws BadRequestException {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            throw new RuntimeException("Error: Username is already taken!");
+            throw new BadRequestException("Error: Username is already taken!");
         }
 
         if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
-            throw new RuntimeException("Error: PhoneNumber is already in use!");
+            throw new BadRequestException("Error: PhoneNumber is already in use!");
         }
 
         Role defaultRole = roleRepository.findByName(ERole.USER)
                 .orElseThrow(() -> new RuntimeException("Error: Default Role is not found."));
+
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getPhoneNumber(),
                 encoder.encode(signUpRequest.getPassword()),
@@ -89,10 +91,16 @@ public class AuthServiceImpl implements AuthService {
 
         user.setProfilePicture("https://res.cloudinary.com/donation-application/image/upload/v1711632747/default-avatar-icon-of-social-media-user-vector_thrtbz.jpg");
 
-        if (signUpRequest.getRole() != null && signUpRequest.getRole().contains("admin")) {
-            Role adminRole = roleRepository.findByName(ERole.ADMIN)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            user.setRole(adminRole);
+        if (signUpRequest.getRole() != null) {
+            if (signUpRequest.getRole().contains("admin") || signUpRequest.getRole().contains("ADMIN")) {
+                Role adminRole = roleRepository.findByName(ERole.ADMIN)
+                        .orElseThrow(() -> new BadRequestException("Error: Role is not found."));
+                user.setRole(adminRole);
+            } else if (signUpRequest.getRole().contains("sub admin") || signUpRequest.getRole().contains("SUB ADMIN")) {
+                Role subAdminRole = roleRepository.findByName(ERole.SUB_ADMIN)
+                        .orElseThrow(() -> new BadRequestException("Error: Role is not found."));
+                user.setRole(subAdminRole);
+            }
         }
 
         userRepository.save(user);
