@@ -118,6 +118,7 @@ public class DistributionServiceImpl implements DistributionService {
                 }
             }
             distribution.setCategory(distributionType);
+
             return distributionRepository.save(distribution);
         }
         throw new BadRequestException("Admin not found");

@@ -13,6 +13,8 @@ public class DistributionRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date distributionDate;
 
+    private String receiver;
+
     private MultipartFile image;
 
     private String description;

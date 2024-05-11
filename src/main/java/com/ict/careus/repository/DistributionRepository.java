@@ -29,7 +29,7 @@ public interface DistributionRepository extends JpaRepository<Distribution, Long
             "WHERE YEAR(distribution_date) = :year", nativeQuery = true)
     Double totalDistributionAmountByYear(@Param("year") int year);
 
-    @Query(value = "SELECT COUNT(receiver) AS penerima_manfaat FROM distribution", nativeQuery = true)
+    @Query(value = "SELECT COUNT(DISTINCT receiver) AS penerima_manfaat FROM distribution", nativeQuery = true)
     long totalDistributionReceiver();
 
     @Query(value = "SELECT COUNT(DISTINCT receiver) AS penerima_manfaat FROM distribution " +
