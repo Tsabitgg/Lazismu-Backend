@@ -44,10 +44,14 @@ public class AuthServiceImpl implements AuthService {
     private JwtUtils jwtUtils;
 
     @Override
-    public JwtResponse authenticateUser(LoginRequest loginRequest, HttpServletResponse response) {
+    public JwtResponse authenticateUser(LoginRequest loginRequest, HttpServletResponse response) throws BadRequestException {
         // Autentikasi pengguna
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword()));
+
+        if (loginRequest.getPhoneNumber().length() != 10) {
+            throw new BadRequestException("Error: PhoneNumber should be 10 digits!");
+        }
 
         // Set autentikasi ke dalam konteks keamanan
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -80,6 +84,11 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Error: PhoneNumber is already in use!");
         }
 
+        // Validasi nomor telepon harus memiliki panjang 10 digit
+        if (signUpRequest.getPhoneNumber().length() != 10) {
+            throw new BadRequestException("Error: PhoneNumber should be 10 digits!");
+        }
+
         Role defaultRole = roleRepository.findByName(ERole.USER)
                 .orElseThrow(() -> new RuntimeException("Error: Default Role is not found."));
 
@@ -92,11 +101,11 @@ public class AuthServiceImpl implements AuthService {
         user.setProfilePicture("https://res.cloudinary.com/donation-application/image/upload/v1711632747/default-avatar-icon-of-social-media-user-vector_thrtbz.jpg");
 
         if (signUpRequest.getRole() != null) {
-            if (signUpRequest.getRole().contains("admin") || signUpRequest.getRole().contains("ADMIN")) {
+            if (signUpRequest.getRole().equalsIgnoreCase("admin")) {
                 Role adminRole = roleRepository.findByName(ERole.ADMIN)
                         .orElseThrow(() -> new BadRequestException("Error: Role is not found."));
                 user.setRole(adminRole);
-            } else if (signUpRequest.getRole().contains("sub admin") || signUpRequest.getRole().contains("SUB ADMIN")) {
+            } else if (signUpRequest.getRole().equalsIgnoreCase("sub admin")) {
                 Role subAdminRole = roleRepository.findByName(ERole.SUB_ADMIN)
                         .orElseThrow(() -> new BadRequestException("Error: Role is not found."));
                 user.setRole(subAdminRole);
@@ -107,4 +116,5 @@ public class AuthServiceImpl implements AuthService {
 
         return user;
     }
+
 }

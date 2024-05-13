@@ -29,7 +29,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signin")
-    public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) throws BadRequestException {
         JwtResponse jwtResponse = authService.authenticateUser(loginRequest, response);
         return ResponseEntity.ok(jwtResponse);
     }

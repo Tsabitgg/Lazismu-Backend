@@ -9,6 +9,6 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
-    JwtResponse authenticateUser(LoginRequest loginRequest, HttpServletResponse response);
+    JwtResponse authenticateUser(LoginRequest loginRequest, HttpServletResponse response) throws BadRequestException;
     User registerUser(SignupRequest signUpRequest) throws BadRequestException;
 }
