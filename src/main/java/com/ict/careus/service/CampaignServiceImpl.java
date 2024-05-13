@@ -51,7 +51,7 @@ public class CampaignServiceImpl implements CampaignService{
             User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
                     .orElseThrow(() -> new BadRequestException("User not found"));
 
-            if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
+            if (!existingUser.getRole().getName().equals(ERole.ADMIN) && !existingUser.getRole().getName().equals(ERole.SUB_ADMIN)) {
                 throw new BadRequestException("Only ADMIN users can create campaigns");
             }
 
@@ -78,6 +78,12 @@ public class CampaignServiceImpl implements CampaignService{
 
             String baseurl = "www.careus.com/campaign/";
             campaign.setGenerateLink(baseurl + campaign.getCampaignCode());
+
+            if (existingUser.getRole().getName().equals(ERole.ADMIN)){
+                campaign.setApproved(true);
+            } else if (existingUser.getRole().getName().equals(ERole.SUB_ADMIN)){
+                campaign.setApproved(false);
+            }
 
             return campaignRepository.save(campaign);
         }
@@ -157,13 +163,54 @@ public class CampaignServiceImpl implements CampaignService{
     }
 
     @Override
-    public Page<Campaign> getAllCampaign(Pageable pageable) {
-        return campaignRepository.findAll(pageable);
+    @Transactional
+    public Campaign approveCampaign(String campaignCode) throws BadRequestException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
+                    .orElseThrow(() -> new BadRequestException("User not found"));
+
+            if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
+                throw new BadRequestException("Only ADMIN users can approve campaigns");
+            }
+
+            Campaign campaign = campaignRepository.findByCampaignCode(campaignCode);
+            if (campaign == null){
+                throw new BadRequestException("CampaignCode not found");
+            }
+
+            campaign.setApproved(true);
+
+            return campaignRepository.save(campaign);
+        }
+        throw new BadRequestException("User not found");
     }
 
     @Override
-    public List<Campaign> getCampaignActive(boolean isActive) {
-        return campaignRepository.findCampaignByActive(isActive);
+    public Page<Campaign> getCampaignByActiveAndApproved(Pageable pageable) {
+        return campaignRepository.findCampaignByActiveAndApproved(pageable);
+    }
+
+//    @Override
+//    public List<Campaign> getApprovedCampaigns() {
+//        return campaignRepository.findByApproved(true);
+//    }
+//
+//    @Override
+//    public List<Campaign> getCampaignActive(boolean isActive) {
+//        return campaignRepository.findCampaignByActive(isActive);
+//    }
+
+
+    @Override
+    public List<Campaign> getPendingCampaigns() {
+        return campaignRepository.findByApproved(false);
+    }
+
+    @Override
+    public Page<Campaign> getAllCampaign(Pageable pageable) {
+        return campaignRepository.findAll(pageable);
     }
 
     @Override

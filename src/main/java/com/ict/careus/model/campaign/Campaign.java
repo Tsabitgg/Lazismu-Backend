@@ -28,6 +28,8 @@ public class Campaign {
 
     private String campaignCode;
     private String campaignImage;
+    
+    @Column(columnDefinition = "TEXT")
     private String description;
     private String location;
     private double targetAmount;
@@ -43,8 +45,12 @@ public class Campaign {
     @Column(nullable = false, updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
+
     @Column(columnDefinition = "BOOLEAN")
     private boolean active;
 
     private String generateLink;
+
+    @Column(columnDefinition = "BOOLEAN")
+    private boolean approved;
 }

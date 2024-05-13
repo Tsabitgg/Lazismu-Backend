@@ -18,7 +18,11 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     @Query("SELECT c FROM Campaign c WHERE c.category.categoryName = :categoryName")
     Page<Campaign> findByCategoryName(@Param("categoryName") CampaignCategory categoryName, Pageable pageable);
 
-    List<Campaign> findCampaignByActive(boolean isActive);
+    List<Campaign> findByApproved(boolean approved);
+//    List<Campaign> findCampaignByActive(boolean isActive);
+
+    @Query("SELECT c FROM Campaign c WHERE c.active = true AND c.approved = true")
+    Page<Campaign> findCampaignByActiveAndApproved(Pageable pageable);
 
     Campaign findByCampaignCode(String campaignCode);
 

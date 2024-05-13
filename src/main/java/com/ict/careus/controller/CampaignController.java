@@ -48,6 +48,16 @@ public class CampaignController {
         }
     }
 
+    @PutMapping("/admin/approve")
+    public ResponseEntity<?> approveCampaign(@RequestParam String campaignCode) {
+        try {
+            Campaign approvedCampaign = campaignService.approveCampaign(campaignCode);
+            return new ResponseEntity<>(approvedCampaign, HttpStatus.OK);
+        } catch (BadRequestException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @DeleteMapping("/admin/delete-campaign/{campaignId}")
     public MessageResponse deleteCampaign(@PathVariable long campaignId) throws BadRequestException {
         campaignService.deleteCampaign(campaignId);
@@ -55,7 +65,7 @@ public class CampaignController {
     }
 
     @GetMapping("/campaign")
-    public Page<Campaign> getCampaigns(@RequestParam(name = "year", required = false) Integer year,
+    public Page<Campaign> getAllCampaigns(@RequestParam(name = "year", required = false) Integer year,
                                        @RequestParam(name = "page", defaultValue = "0") int page) {
         int pageSize = 12; // Jumlah campaign per halaman
         PageRequest pageRequest = PageRequest.of(page, pageSize);
@@ -66,11 +76,32 @@ public class CampaignController {
         }
     }
 
-    @GetMapping("/campaign/active")
-    public ResponseEntity<List<Campaign>> getCampaignActive(){
-        List<Campaign> activeCampaign = campaignService.getCampaignActive(true);
-        return ResponseEntity.ok(activeCampaign);
+//    @GetMapping("/campaign/approved")
+//    public ResponseEntity<List<Campaign>> getApprovedCampaigns() {
+//        List<Campaign> approvedCampaigns = campaignService.getApprovedCampaigns();
+//        return new ResponseEntity<>(approvedCampaigns, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/campaign/active")
+//    public ResponseEntity<List<Campaign>> getCampaignActive(){
+//        List<Campaign> activeCampaign = campaignService.getCampaignActive(true);
+//        return ResponseEntity.ok(activeCampaign);
+//    }
+
+    @GetMapping("/campaign/active-and-approved-campaign")
+    public Page<Campaign> getCampaignByActiveAndApproved(@RequestParam(name = "page", defaultValue = "0") int page){
+        int pageSize = 12;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        return campaignService.getCampaignByActiveAndApproved(pageRequest);
     }
+
+
+    @GetMapping("/campaign/pending")
+    public ResponseEntity<List<Campaign>> getPendingCampaigns() {
+        List<Campaign> pendingCampaigns = campaignService.getPendingCampaigns();
+        return new ResponseEntity<>(pendingCampaigns, HttpStatus.OK);
+    }
+
 
     @GetMapping("/campaign/{campaignCode}")
     public ResponseEntity<Campaign> getCampaignByCode(@PathVariable String campaignCode) {
@@ -110,16 +141,21 @@ public class CampaignController {
     }
 
     @GetMapping("/campaign/{campaignCode}/history")
-    public ResponseEntity<List<CampaignTransactionsHistoryResponse>> getCampaignTransactionsHistory(@PathVariable String campaignCode) {
-        Optional<Campaign> campaignOptional = campaignService.getCampaignByCode(campaignCode);
-        if (!campaignOptional.isPresent()) {
+    public ResponseEntity<Page<CampaignTransactionsHistoryResponse>> getCampaignTransactionsHistory(@PathVariable String campaignCode,
+                                                                                                    @RequestParam(name = "page", defaultValue = "0") int page) {
+        int pageSize = 6;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+
+        Campaign campaign = campaignService.getCampaignByCode(campaignCode)
+                .orElse(null);
+
+        if (campaign == null) {
             return ResponseEntity.notFound().build();
         }
-        Campaign campaign = campaignOptional.get();
-        List<CampaignTransactionsHistoryResponse> campaignTransactionsDTO = transactionService.getCampaignTransactionsHistory(campaign);
-        return ResponseEntity.ok(campaignTransactionsDTO);
-    }
 
+        Page<CampaignTransactionsHistoryResponse> campaignTransactionsPage = transactionService.getCampaignTransactionsHistory(campaign, pageRequest);
+        return ResponseEntity.ok(campaignTransactionsPage);
+    }
     @GetMapping("/campaign/total-donation")
     public double getTotalDonationCampaign(){
         return transactionService.getTotalDonationCampaign();
