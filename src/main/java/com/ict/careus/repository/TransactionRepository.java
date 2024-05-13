@@ -32,7 +32,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findByUser(User user);
 
-    List<Transaction> findByCampaign(Campaign campaign);
+    Page<Transaction> findByCampaign(Campaign campaign, Pageable pageable);
 
     @Query(value = "SELECT SUM(transaction.transaction_amount) FROM transaction INNER JOIN\n" +
             "campaign ON transaction.campaign_id = campaign.campaign_id", nativeQuery = true)

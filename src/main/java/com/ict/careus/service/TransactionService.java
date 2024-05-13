@@ -21,7 +21,7 @@ public interface TransactionService {
 
     byte[] generateQRCode(long transactionId) throws BadRequestException;
 
-    List<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign);
+    Page<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign, Pageable pageable);
     Page<TransactionResponse> getAllTransaction(int year, Pageable pageable);
 
     double getTotalTransactionCount();

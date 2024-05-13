@@ -1,6 +1,5 @@
 package com.ict.careus.service;
 
-import com.google.zxing.NotFoundException;
 import com.ict.careus.dto.request.TransactionRequest;
 import com.ict.careus.dto.response.CampaignTransactionsHistoryResponse;
 import com.ict.careus.dto.response.TransactionResponse;
@@ -196,9 +195,9 @@ public class TransactionServiceImpl implements TransactionService {
 
 
     @Override
-    public List<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign) {
-        List<Transaction> campaignTransactions = transactionRepository.findByCampaign(campaign);
-        return campaignTransactionsDTO(campaignTransactions);
+    public Page<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign, Pageable pageable) {
+        Page<Transaction> campaignTransactions = transactionRepository.findByCampaign(campaign, pageable);
+        return campaignTransactions.map(this::campaignTransactionsDTO);
     }
 
     @Override
@@ -251,18 +250,14 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionRepository.findById(transactionId);
     }
 
-    private  List<CampaignTransactionsHistoryResponse> campaignTransactionsDTO(List<Transaction> transactions){
-        List<CampaignTransactionsHistoryResponse> campaignTransactionsHistory = new ArrayList<>();
-        for (Transaction transaction : transactions){
-            CampaignTransactionsHistoryResponse campaignTransactionsDTO = new CampaignTransactionsHistoryResponse();
-            campaignTransactionsDTO.setUsername(transaction.getUsername());
-            campaignTransactionsDTO.setTransactionAmount(transaction.getTransactionAmount());
-            campaignTransactionsDTO.setMessage(transaction.getMessage());
-            campaignTransactionsDTO.setTransactionDate(transaction.getTransactionDate());
+    private CampaignTransactionsHistoryResponse campaignTransactionsDTO(Transaction transaction) {
+        CampaignTransactionsHistoryResponse campaignTransactionsDTO = new CampaignTransactionsHistoryResponse();
+        campaignTransactionsDTO.setUsername(transaction.getUsername());
+        campaignTransactionsDTO.setTransactionAmount(transaction.getTransactionAmount());
+        campaignTransactionsDTO.setMessage(transaction.getMessage());
+        campaignTransactionsDTO.setTransactionDate(transaction.getTransactionDate());
 
-            campaignTransactionsHistory.add(campaignTransactionsDTO);
-        }
-        return campaignTransactionsHistory;
+        return campaignTransactionsDTO;
     }
 
     @Override
