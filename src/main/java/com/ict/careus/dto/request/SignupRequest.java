@@ -8,10 +8,8 @@ import java.util.Set;
 public class SignupRequest {
     private String username;
     private String phoneNumber;
-
-    private Set<String> role;
-
     private String password;
 
     private String address;
+    private String role;
 }
