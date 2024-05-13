@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -144,7 +145,7 @@ public class NewsServiceImpl implements NewsService{
 
     @Override
     public Page<News> getAllNews(Pageable pageable) {
-        return newsRepository.findAll(pageable);
+        return newsRepository.findAllByDescending(pageable);
     }
 
     @Override
