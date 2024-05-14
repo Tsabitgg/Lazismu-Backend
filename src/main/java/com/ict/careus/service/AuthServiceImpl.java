@@ -84,11 +84,6 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Error: PhoneNumber is already in use!");
         }
 
-        // Validasi nomor telepon harus memiliki panjang 10 digit
-        if (signUpRequest.getPhoneNumber().length() != 10) {
-            throw new BadRequestException("Error: PhoneNumber should be 10 digits!");
-        }
-
         Role defaultRole = roleRepository.findByName(ERole.USER)
                 .orElseThrow(() -> new RuntimeException("Error: Default Role is not found."));
 
