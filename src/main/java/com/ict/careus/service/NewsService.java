@@ -1,7 +1,7 @@
 package com.ict.careus.service;
 
 import com.ict.careus.dto.request.NewsRequest;
-import com.ict.careus.model.News;
+import com.ict.careus.model.news.News;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

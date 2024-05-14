@@ -1,4 +1,4 @@
-package com.ict.careus.model;
+package com.ict.careus.model.news;
 
 import com.ict.careus.enumeration.ETopic;
 import jakarta.persistence.*;

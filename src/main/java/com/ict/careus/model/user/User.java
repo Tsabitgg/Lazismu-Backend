@@ -3,6 +3,7 @@ package com.ict.careus.model.user;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ict.careus.enumeration.ERole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
                 @UniqueConstraint(columnNames = "username"),
                 @UniqueConstraint(columnNames = "phoneNumber")
         })
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

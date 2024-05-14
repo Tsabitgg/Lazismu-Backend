@@ -1,7 +1,7 @@
 package com.ict.careus.repository;
 
 import com.ict.careus.enumeration.ETopic;
-import com.ict.careus.model.News;
+import com.ict.careus.model.news.News;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class TopicResponse {
-    private int id;
+    private long id;
     private String topicName;
 }

@@ -4,7 +4,7 @@ import com.ict.careus.dto.request.NewsRequest;
 import com.ict.careus.dto.response.MessageResponse;
 import com.ict.careus.dto.response.TopicResponse;
 import com.ict.careus.enumeration.ETopic;
-import com.ict.careus.model.News;
+import com.ict.careus.model.news.News;
 import com.ict.careus.service.NewsService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;

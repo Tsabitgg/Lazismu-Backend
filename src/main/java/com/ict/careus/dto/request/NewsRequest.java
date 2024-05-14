@@ -1,14 +1,12 @@
 package com.ict.careus.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ict.careus.model.Topic;
+import com.ict.careus.model.news.Topic;
 import jakarta.persistence.Column;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 public class NewsRequest {
