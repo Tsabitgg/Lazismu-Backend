@@ -70,13 +70,12 @@ public class CampaignServiceImpl implements CampaignService{
                             ObjectUtils.emptyMap());
                     String imageUrl = uploadResult.get("url").toString();
                     campaign.setCampaignImage(imageUrl);
-
                 } catch (IOException e) {
-                    throw new BadRequestException("Error uploading image", e);
+                    e.printStackTrace();
                 }
             }
 
-            String baseurl = "www.careus.com/campaign/";
+            String baseurl = "www.lazismu.com/campaign/";
             campaign.setGenerateLink(baseurl + campaign.getCampaignCode());
 
             if (existingUser.getRole().getName().equals(ERole.ADMIN)){
@@ -135,7 +134,7 @@ public class CampaignServiceImpl implements CampaignService{
                     }
                 }
 
-                String baseUrl = "www.careus.com/campaign/";
+                String baseUrl = "www.lazismu.com/campaign/";
                 updateCampaign.setGenerateLink(baseUrl + updateCampaign.getCampaignCode());
 
                 return campaignRepository.save(updateCampaign);
@@ -189,8 +188,16 @@ public class CampaignServiceImpl implements CampaignService{
 
     @Override
     public Page<Campaign> getCampaignByActiveAndApproved(Pageable pageable) {
-        return campaignRepository.findCampaignByActiveAndApproved(pageable);
+        Page<Campaign> campaigns = campaignRepository.findCampaignByActiveAndApproved(pageable);
+        for (Campaign campaign : campaigns.getContent()) {
+            if (campaign.getCurrentAmount() >= campaign.getTargetAmount()) {
+                campaign.setActive(false);
+                campaignRepository.save(campaign);
+            }
+        }
+        return campaigns;
     }
+
 
 //    @Override
 //    public List<Campaign> getApprovedCampaigns() {

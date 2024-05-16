@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long userId;
 
     private String username;
 
@@ -39,7 +39,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @ManyToOne
-    @JoinColumn(referencedColumnName = "id")
+    @JoinColumn(name = "role_id", referencedColumnName = "roleId")
     private Role role;
 
     @Column(nullable = false, updatable = false)

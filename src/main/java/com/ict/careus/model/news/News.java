@@ -16,7 +16,7 @@ public class News {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long newsId;
 
     private String title;
 
@@ -25,7 +25,7 @@ public class News {
     private String image;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "id")
+    @JoinColumn(name = "topic_id", referencedColumnName = "topicId")
     private Topic topic;
 
     @Column(nullable = false, updatable = false)

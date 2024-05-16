@@ -14,7 +14,7 @@ public class Topic {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long topicId;
 
     @Enumerated(EnumType.STRING)
     private ETopic topicName;

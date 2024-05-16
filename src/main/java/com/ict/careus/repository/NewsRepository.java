@@ -15,7 +15,7 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     @Query("SELECT n FROM News n WHERE n.topic.topicName = :topicName")
     Page<News> findByTopicName(@Param("topicName") ETopic topicName, Pageable pageable);
 
-    @Query("SELECT n FROM News n ORDER BY n.id DESC")
+    @Query("SELECT n FROM News n ORDER BY n.newsId DESC")
     Page<News> findAllByDescending(Pageable pageable);
     News findById(long id);
 }

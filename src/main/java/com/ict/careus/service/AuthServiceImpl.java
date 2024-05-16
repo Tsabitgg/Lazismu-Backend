@@ -49,10 +49,6 @@ public class AuthServiceImpl implements AuthService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword()));
 
-        if (loginRequest.getPhoneNumber().length() != 10) {
-            throw new BadRequestException("Error: PhoneNumber should be 10 digits!");
-        }
-
         // Set autentikasi ke dalam konteks keamanan
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

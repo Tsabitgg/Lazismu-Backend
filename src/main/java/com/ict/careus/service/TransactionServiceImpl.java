@@ -224,7 +224,7 @@ public class TransactionServiceImpl implements TransactionService {
             User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
                     .orElseThrow(() -> new BadRequestException("User not found"));
 
-            long userId = existingUser.getId();
+            long userId = existingUser.getUserId();
             return transactionRepository.getUserTransactionSummary(userId);
         }
         throw new BadRequestException("User not found");
@@ -239,7 +239,7 @@ public class TransactionServiceImpl implements TransactionService {
             User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
                     .orElseThrow(() -> new BadRequestException("User not found"));
 
-            long userId = existingUser.getId();
+            long userId = existingUser.getUserId();
             return transactionRepository.getUserTransactionSummaryByYear(userId, year);
         }
         throw new BadRequestException("User not found");

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class SubAdmin extends User {
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "id")
+    @JoinColumn(name = "service_office_id",referencedColumnName = "serviceOfficeid")
     private ServiceOffice serviceOffice;
 
     public SubAdmin(String username, String phoneNumber, String password, String address, Role role, ServiceOffice serviceOffice) {

@@ -21,7 +21,7 @@ public class Distribution {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long distributionId;
 
     private double distributionAmount;
 

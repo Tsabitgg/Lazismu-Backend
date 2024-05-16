@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class ServiceOffice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long serviceOfficeId;
 
     @Enumerated(EnumType.STRING)
     private EServiceOffice serviceOffice;

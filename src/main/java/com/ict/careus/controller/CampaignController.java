@@ -48,7 +48,7 @@ public class CampaignController {
         }
     }
 
-    @PutMapping("/admin/approve")
+    @PutMapping("/admin/approve-campaign")
     public ResponseEntity<?> approveCampaign(@RequestParam String campaignCode) {
         try {
             Campaign approvedCampaign = campaignService.approveCampaign(campaignCode);
