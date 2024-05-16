@@ -1,10 +1,12 @@
 package com.ict.careus.controller;
 
 import com.ict.careus.dto.request.CampaignRequest;
+import com.ict.careus.dto.response.CampaignDistributionHistoryResponse;
 import com.ict.careus.dto.response.CampaignTransactionsHistoryResponse;;
 import com.ict.careus.dto.response.MessageResponse;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.service.CampaignService;
+import com.ict.careus.service.DistributionService;
 import com.ict.careus.service.TransactionService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class CampaignController {
 
     @Autowired
     private TransactionService transactionService;
+
+    @Autowired
+    private DistributionService distributionService;
 
     @PostMapping("/admin/create-campaign")
     public ResponseEntity<?> createCampaign(@ModelAttribute CampaignRequest campaignRequest) {
@@ -156,6 +161,24 @@ public class CampaignController {
         Page<CampaignTransactionsHistoryResponse> campaignTransactionsPage = transactionService.getCampaignTransactionsHistory(campaign, pageRequest);
         return ResponseEntity.ok(campaignTransactionsPage);
     }
+
+    @GetMapping("/campaign/{campaignCode}/distribution")
+    public ResponseEntity<Page<CampaignDistributionHistoryResponse>> getCampaignDistributionHistory(@PathVariable String campaignCode,
+                                                                                                    @RequestParam(name = "page", defaultValue = "0") int page) {
+        int pageSize = 6;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+
+        Campaign campaign = campaignService.getCampaignByCode(campaignCode)
+                .orElse(null);
+
+        if (campaign == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Page<CampaignDistributionHistoryResponse> campaignDistributionPage = distributionService.getCampaignDistributionHistory(campaign, pageRequest);
+        return ResponseEntity.ok(campaignDistributionPage);
+    }
+
     @GetMapping("/campaign/total-donation")
     public double getTotalDonationCampaign(){
         return transactionService.getTotalDonationCampaign();

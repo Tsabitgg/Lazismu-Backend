@@ -3,6 +3,8 @@ package com.ict.careus.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ict.careus.dto.request.DistributionRequest;
+import com.ict.careus.dto.response.CampaignDistributionHistoryResponse;
+import com.ict.careus.dto.response.CampaignTransactionsHistoryResponse;
 import com.ict.careus.enumeration.ERole;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.transaction.Distribution;
@@ -15,6 +17,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -122,5 +126,28 @@ public class DistributionServiceImpl implements DistributionService {
             return distributionRepository.save(distribution);
         }
         throw new BadRequestException("Admin not found");
+    }
+
+    @Override
+    public Page<CampaignDistributionHistoryResponse> getCampaignDistributionHistory(Campaign campaign, Pageable pageable) {
+        Page<Distribution> campaignDistribution = distributionRepository.findByCampaign(campaign, pageable);
+        return campaignDistribution.map(this::campaignDistributionDTO);
+    }
+
+    @Override
+    public Page<Distribution> getAllDistribution(Pageable pageable) {
+        return distributionRepository.findAll(pageable);
+    }
+
+    private CampaignDistributionHistoryResponse campaignDistributionDTO(Distribution distribution) {
+        CampaignDistributionHistoryResponse campaignDistributionDTO = new CampaignDistributionHistoryResponse();
+        campaignDistributionDTO.setId(distribution.getDistributionId());
+        campaignDistributionDTO.setDistributionAmount(distribution.getDistributionAmount());
+        campaignDistributionDTO.setReceiver(distribution.getReceiver());
+        campaignDistributionDTO.setDistributionDate(distribution.getDistributionDate());
+        campaignDistributionDTO.setImage(distribution.getImage());
+        campaignDistributionDTO.setDescription(distribution.getDescription());
+
+        return campaignDistributionDTO;
     }
 }
