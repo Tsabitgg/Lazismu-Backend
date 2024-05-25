@@ -22,11 +22,11 @@ public class Submission {
     private long submissionId;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "userId")
+    @JoinColumn(name = "user_id", referencedColumnName = "userId")
     private User user;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "campaignId")
+    @JoinColumn(name = "campaign_id", referencedColumnName = "campaignId")
     private Campaign campaign;
 
     private double submissionAmount;
@@ -35,6 +35,7 @@ public class Submission {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date submissionDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date approvedDate = null;
 
     private boolean approved;

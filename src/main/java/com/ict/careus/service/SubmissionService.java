@@ -9,4 +9,8 @@ public interface SubmissionService {
     List<Submission> getAllSubmission();
     Submission createSubmission(Submission submission) throws BadRequestException;
     void deleteSubmission(long submissionId);
+
+    Submission approveSubmission(Long submissionId) throws BadRequestException;
+    List<Submission> getApprovedSubmission();
+    List<Submission> getPendingSubmission();
 }
