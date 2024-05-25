@@ -1,5 +1,6 @@
 package com.ict.careus.repository;
 
+import com.ict.careus.dto.response.SummaryCampaignResponse;
 import com.ict.careus.enumeration.CampaignCategory;
 import com.ict.careus.model.campaign.Campaign;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {
@@ -36,4 +39,23 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
     @Query("SELECT c FROM Campaign c WHERE YEAR(c.startDate) = :year")
     Page<Campaign> findByYear(@Param("year") int year, Pageable pageable);
+
+    @Query("SELECT \n" +
+            " c.campaignId,\n" +
+            " c.campaignName,\n" +
+            " c.location,\n" +
+            " c.targetAmount,\n" +
+            " c.currentAmount,\n" +
+            " c.currentAmount * 0.15 AS amil,\n" +
+            " c.active\n" +
+            "FROM \n" +
+            " Campaign c\n" +
+            "GROUP BY c.campaignId, c.currentAmount")
+    List<Object []> getAmilCampaign();
+
+    @Query("SELECT SUM(c.currentAmount) AS totalCampaignTransactionAmount, " +
+            "SUM(c.currentAmount * 0.15) AS totalAmil, " +
+            "SUM(c.distribution) AS totalCampaignDistributionAmount " +
+            "FROM Campaign c")
+    Optional<Map<String, Double>> getSummaryCampaign();
 }
