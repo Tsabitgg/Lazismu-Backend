@@ -54,6 +54,7 @@ public class CampaignController {
         }
     }
 
+    @CrossOrigin
     @PutMapping("/admin/approve-campaign")
     public ResponseEntity<?> approveCampaign(@RequestParam String campaignCode) {
         try {
