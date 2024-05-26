@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -182,5 +183,10 @@ public class CampaignController {
     @GetMapping("/campaign/total-donation")
     public double getTotalDonationCampaign(){
         return transactionService.getTotalDonationCampaign();
+    }
+
+    @GetMapping("/campaign/get-by-service-office/{serviceOfficeId}")
+    public List<Campaign> getCampaignsByServiceOffice(@PathVariable long serviceOfficeId) {
+        return campaignService.getCampaignsByServiceOffice(serviceOfficeId);
     }
 }

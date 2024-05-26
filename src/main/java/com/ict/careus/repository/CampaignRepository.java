@@ -58,4 +58,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
             "SUM(c.distribution) AS totalCampaignDistributionAmount " +
             "FROM Campaign c")
     Optional<Map<String, Double>> getSummaryCampaign();
+
+    @Query("SELECT c FROM Campaign c WHERE c.creator IN (SELECT sa FROM SubAdmin sa WHERE sa.serviceOffice.serviceOfficeId = :serviceOfficeId)")
+    List<Campaign> findCampaignsByServiceOfficeId(@Param("serviceOfficeId") long serviceOfficeId);
 }

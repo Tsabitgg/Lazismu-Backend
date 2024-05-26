@@ -32,4 +32,5 @@ public interface CampaignService {
     Page<Campaign> getCampaignsByYear(int year, Pageable pageable);
 
 
+    List<Campaign> getCampaignsByServiceOffice(long serviceOfficeId);
 }

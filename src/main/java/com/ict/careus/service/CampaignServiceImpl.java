@@ -83,6 +83,7 @@ public class CampaignServiceImpl implements CampaignService{
             } else if (existingUser.getRole().getName().equals(ERole.SUB_ADMIN)){
                 campaign.setApproved(false);
             }
+            campaign.setCreator(existingUser);
 
             return campaignRepository.save(campaign);
         }
@@ -116,10 +117,8 @@ public class CampaignServiceImpl implements CampaignService{
                 updateCampaign.setCampaignName(campaignRequest.getCampaignName());
                 updateCampaign.setDescription(campaignRequest.getDescription());
                 updateCampaign.setLocation(campaignRequest.getLocation());
-                updateCampaign.setVaNumber(campaignRequest.getVaNumber());
                 updateCampaign.setTargetAmount(campaignRequest.getTargetAmount());
                 updateCampaign.setCurrentAmount(campaignRequest.getCurrentAmount());
-                updateCampaign.setCreator(campaignRequest.getCreator());
                 updateCampaign.setActive(campaignRequest.isActive());
 
                 if (campaignRequest.getCampaignImage() != null && !campaignRequest.getCampaignImage().isEmpty()) {
@@ -243,5 +242,10 @@ public class CampaignServiceImpl implements CampaignService{
     @Override
     public Page<Campaign> getCampaignsByYear(int year, Pageable pageable) {
         return campaignRepository.findByYear(year, pageable);
+    }
+
+    @Override
+    public List<Campaign> getCampaignsByServiceOffice(long serviceOfficeId) {
+        return campaignRepository.findCampaignsByServiceOfficeId(serviceOfficeId);
     }
 }
