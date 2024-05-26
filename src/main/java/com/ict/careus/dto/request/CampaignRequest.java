@@ -21,8 +21,6 @@ public class CampaignRequest {
     private String location;
     private double targetAmount;
     private double currentAmount;
-    private String vaNumber;
-    private String creator;
     @Column(nullable = false, updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
