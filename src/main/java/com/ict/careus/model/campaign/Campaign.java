@@ -1,14 +1,13 @@
 package com.ict.careus.model.campaign;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ict.careus.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -34,8 +33,9 @@ public class Campaign {
     private String location;
     private double targetAmount;
     private double currentAmount;
-    private String vaNumber;
-    private String creator;
+    @ManyToOne
+    @JoinColumn(name = "creator", referencedColumnName = "userId")
+    private User creator;
     private double distribution;
 
     @Column(nullable = false, updatable = false)
