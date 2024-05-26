@@ -186,7 +186,10 @@ public class CampaignController {
     }
 
     @GetMapping("/campaign/get-by-service-office/{serviceOfficeId}")
-    public List<Campaign> getCampaignsByServiceOffice(@PathVariable long serviceOfficeId) {
-        return campaignService.getCampaignsByServiceOffice(serviceOfficeId);
+    public Page<Campaign> getCampaignsByServiceOffice(@PathVariable long serviceOfficeId,
+                                                      @RequestParam(name = "page", defaultValue = "0") int page) {
+        int pageSize = 6;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        return campaignService.getCampaignsByServiceOffice(serviceOfficeId, pageRequest);
     }
 }

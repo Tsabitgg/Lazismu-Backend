@@ -31,6 +31,5 @@ public interface CampaignService {
     Page<Campaign> getCampaignByCategoryName(String categoryName, Pageable pageable);
     Page<Campaign> getCampaignsByYear(int year, Pageable pageable);
 
-
-    List<Campaign> getCampaignsByServiceOffice(long serviceOfficeId);
+    Page<Campaign> getCampaignsByServiceOffice(long serviceOfficeId, Pageable pageable);
 }

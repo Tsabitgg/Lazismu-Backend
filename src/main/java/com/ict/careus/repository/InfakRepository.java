@@ -1,6 +1,8 @@
 package com.ict.careus.repository;
 
 import com.ict.careus.model.ziswaf.Infak;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -20,5 +22,5 @@ public interface InfakRepository extends JpaRepository<Infak, Long> {
             "FROM\n" +
             " Infak i\n" +
             "GROUP BY i.infakId, i.infakCategory")
-    List<Object []> getAmilInfak();
+    Page<Object []> getAmilInfak(Pageable pageable);
 }

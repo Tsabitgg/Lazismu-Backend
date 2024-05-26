@@ -1,6 +1,8 @@
 package com.ict.careus.service;
 
 import com.ict.careus.dto.response.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,16 +12,16 @@ public interface SummaryService {
     SummaryResponse getSummary(Integer year);
 
     //amil for campaign
-    List<AmilCampaignResponse> getAmilCampaign();
+    Page<AmilCampaignResponse> getAmilCampaign(Pageable pageable);
 
     //amil for zakat
-    List<AmilZakatResponse> getAmilZakat();
+    Page<AmilZakatResponse> getAmilZakat(Pageable pageable);
 
     //amil for infak
-    List<AmilInfakResponse> getAmilInfak();
+    Page<AmilInfakResponse> getAmilInfak(Pageable pageable);
 
     //amil for wakaf
-    List<AmilWakafResponse> getAmilWakaf();
+    Page<AmilWakafResponse> getAmilWakaf(Pageable pageable);
 
     //summary for campaign
     Optional<SummaryCampaignResponse> getSummaryCampaign();

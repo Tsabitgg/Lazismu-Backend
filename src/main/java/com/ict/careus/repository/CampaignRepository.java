@@ -51,7 +51,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
             "FROM \n" +
             " Campaign c\n" +
             "GROUP BY c.campaignId, c.currentAmount")
-    List<Object []> getAmilCampaign();
+    Page<Object []> getAmilCampaign(Pageable pageable);
 
     @Query("SELECT SUM(c.currentAmount) AS totalCampaignTransactionAmount, " +
             "SUM(c.currentAmount * 0.15) AS totalAmil, " +
@@ -60,5 +60,5 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
     Optional<Map<String, Double>> getSummaryCampaign();
 
     @Query("SELECT c FROM Campaign c WHERE c.creator IN (SELECT sa FROM SubAdmin sa WHERE sa.serviceOffice.serviceOfficeId = :serviceOfficeId)")
-    List<Campaign> findCampaignsByServiceOfficeId(@Param("serviceOfficeId") long serviceOfficeId);
+    Page<Campaign> findCampaignsByServiceOfficeId(@Param("serviceOfficeId") long serviceOfficeId, Pageable pageable);
 }

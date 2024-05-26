@@ -7,6 +7,8 @@ import com.ict.careus.enumeration.ZakatCategory;
 import com.ict.careus.model.ziswaf.Zakat;
 import com.ict.careus.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -54,61 +56,53 @@ public class SummaryServiceImpl implements SummaryService {
     }
 
     @Override
-    public List<AmilCampaignResponse> getAmilCampaign() {
-        List<Object[]> results = campaignRepository.getAmilCampaign();
-        return results.stream().map(result ->
-                new AmilCampaignResponse(
-                        (Long) result[0],
-                        (String) result[1],
-                        (String) result[2],
-                        (Double) result[3],
-                        (Double) result[4],
-                        (Double) result[5],
-                        (Boolean) result[6]
-                )
-        ).collect(Collectors.toList());
+    public Page<AmilCampaignResponse> getAmilCampaign(Pageable pageable) {
+        Page<Object[]> results = campaignRepository.getAmilCampaign(pageable);
+        return results.map(result -> new AmilCampaignResponse(
+                (Long) result[0],
+                (String) result[1],
+                (String) result[2],
+                (Double) result[3],
+                (Double) result[4],
+                (Double) result[5],
+                (Boolean) result[6]
+        ));
     }
 
     @Override
-    public List<AmilZakatResponse> getAmilZakat() {
-        List<Object[]> results = zakatRepository.getAmilZakat();
-        return results.stream().map(result ->
-                new AmilZakatResponse(
-                        (Long) result[0],
-                        (ZakatCategory) result[1],
-                        (String) result[2],
-                        (Double) result[3],
-                        (Double) result[4]
-                )
-        ).collect(Collectors.toList());
+    public Page<AmilZakatResponse> getAmilZakat(Pageable pageable) {
+        Page<Object[]> results = zakatRepository.getAmilZakat(pageable);
+        return results.map(result -> new AmilZakatResponse(
+                (Long) result[0],
+                (ZakatCategory) result[1],
+                (String) result[2],
+                (Double) result[3],
+                (Double) result[4]
+        ));
     }
 
     @Override
-    public List<AmilInfakResponse> getAmilInfak() {
-        List<Object[]> results = infakRepository.getAmilInfak();
-        return results.stream().map(result ->
-                new AmilInfakResponse(
-                        (Long) result[0],
-                        (InfakCategory) result[1],
-                        (String) result[2],
-                        (Double) result[3],
-                        (Double) result[4]
-                )
-        ).collect(Collectors.toList());
+    public Page<AmilInfakResponse> getAmilInfak(Pageable pageable) {
+        Page<Object[]> results = infakRepository.getAmilInfak(pageable);
+        return results.map(result -> new AmilInfakResponse(
+                (Long) result[0],
+                (InfakCategory) result[1],
+                (String) result[2],
+                (Double) result[3],
+                (Double) result[4]
+        ));
     }
 
     @Override
-    public List<AmilWakafResponse> getAmilWakaf() {
-        List<Object[]> results = wakafRepository.getAmilWakaf();
-        return results.stream().map(result ->
-                new AmilWakafResponse(
-                        (Long) result[0],
-                        (WakafCategory) result[1],
-                        (String) result[2],
-                        (Double) result[3],
-                        (Double) result[4]
-                )
-        ).collect(Collectors.toList());
+    public Page<AmilWakafResponse> getAmilWakaf(Pageable pageable) {
+        Page<Object[]> results = wakafRepository.getAmilWakaf(pageable);
+        return results.map(result -> new AmilWakafResponse(
+                (Long) result[0],
+                (WakafCategory) result[1],
+                (String) result[2],
+                (Double) result[3],
+                (Double) result[4]
+        ));
     }
 
     @Override

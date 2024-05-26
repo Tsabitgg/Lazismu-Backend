@@ -1,6 +1,8 @@
 package com.ict.careus.repository;
 
 import com.ict.careus.model.ziswaf.Wakaf;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -20,5 +22,5 @@ public interface WakafRepository extends JpaRepository<Wakaf, Long> {
             "FROM\n" +
             " Wakaf w\n" +
             "GROUP BY w.wakafId, w.wakafCategory")
-    List<Object []> getAmilWakaf();
+    Page<Object []> getAmilWakaf(Pageable pageable);
 }

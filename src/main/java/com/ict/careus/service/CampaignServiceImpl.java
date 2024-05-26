@@ -245,7 +245,7 @@ public class CampaignServiceImpl implements CampaignService{
     }
 
     @Override
-    public List<Campaign> getCampaignsByServiceOffice(long serviceOfficeId) {
-        return campaignRepository.findCampaignsByServiceOfficeId(serviceOfficeId);
+    public Page<Campaign> getCampaignsByServiceOffice(long serviceOfficeId,Pageable pageable) {
+        return campaignRepository.findCampaignsByServiceOfficeId(serviceOfficeId, pageable);
     }
 }

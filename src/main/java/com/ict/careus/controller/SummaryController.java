@@ -4,6 +4,8 @@ import com.ict.careus.dto.response.*;
 import com.ict.careus.model.ziswaf.Zakat;
 import com.ict.careus.service.SummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,23 +29,31 @@ public class SummaryController {
     }
 
     @GetMapping("/amil-campaign")
-    public List<AmilCampaignResponse> getAmilCampaign(){
-        return summaryService.getAmilCampaign();
+    public Page<AmilCampaignResponse> getAmilCampaign(@RequestParam(name = "page", defaultValue = "0") int page){
+        int pageSize = 6;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        return summaryService.getAmilCampaign(pageRequest);
     }
 
     @GetMapping("/amil-zakat")
-    public List<AmilZakatResponse> getAmilZakat(){
-        return summaryService.getAmilZakat();
+    public Page<AmilZakatResponse> getAmilZakat(@RequestParam(name = "page", defaultValue = "0") int page){
+        int pageSize = 6;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        return summaryService.getAmilZakat(pageRequest);
     }
 
     @GetMapping("/amil-infak")
-    public List<AmilInfakResponse> getAmilInfak(){
-        return summaryService.getAmilInfak();
+    public Page<AmilInfakResponse> getAmilInfak(@RequestParam(name = "page", defaultValue = "0") int page){
+        int pageSize = 6;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        return summaryService.getAmilInfak(pageRequest);
     }
 
     @GetMapping("/amil-wakaf")
-    public List<AmilWakafResponse> getAmilWakaf(){
-        return summaryService.getAmilWakaf();
+    public Page<AmilWakafResponse> getAmilWakaf(@RequestParam(name = "page", defaultValue = "0") int page){
+        int pageSize = 6;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        return summaryService.getAmilWakaf(pageRequest);
     }
 
     @GetMapping("summary-campaign")
