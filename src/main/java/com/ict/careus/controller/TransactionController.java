@@ -36,20 +36,20 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/qr/{transactionId}")
-    public ResponseEntity<?> getQRCode(@PathVariable long transactionId) {
-        try {
-            byte[] qrCode = transactionService.generateQRCode(transactionId);
-            // Mengubah byte array menjadi InputStream
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(qrCode);
-            // Membaca sebagai gambar PNG
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_PNG)
-                    .body(inputStream.readAllBytes());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
+//    @GetMapping("/qr/{transactionId}")
+//    public ResponseEntity<?> getQRCode(@PathVariable long transactionId) {
+//        try {
+//            byte[] qrCode = transactionService.generateQRCode(transactionId);
+//            // Mengubah byte array menjadi InputStream
+//            ByteArrayInputStream inputStream = new ByteArrayInputStream(qrCode);
+//            // Membaca sebagai gambar PNG
+//            return ResponseEntity.ok()
+//                    .contentType(MediaType.IMAGE_PNG)
+//                    .body(inputStream.readAllBytes());
+//        } catch (Exception e) {
+//            return ResponseEntity.internalServerError().build();
+//        }
+//    }
 
 
     @GetMapping("/total-transaction-count")

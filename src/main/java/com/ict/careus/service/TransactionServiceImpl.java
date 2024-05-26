@@ -166,32 +166,32 @@ public class TransactionServiceImpl implements TransactionService {
         return transaction;
     }
 
-    @Override
-    public byte[] generateQRCode(long transactionId) throws BadRequestException {
-        Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new BadRequestException("Transaction not found"));
-
-        String vaNumber = null;
-
-        switch (transaction.getCategory()) {
-            case "campaign":
-                vaNumber = transaction.getCampaign().getVaNumber();
-                break;
-            case "zakat":
-                vaNumber = transaction.getZakat().getVaNumber();
-                break;
-            case "infak":
-                vaNumber = transaction.getInfak().getVaNumber();
-                break;
-            case "wakaf":
-                vaNumber = transaction.getWakaf().getVaNumber();
-                break;
-        }
-
-        // Generate QR Code
-        ByteArrayOutputStream stream = QRCode.from(vaNumber).to(ImageType.PNG).stream();
-        return stream.toByteArray();
-    }
+//    @Override
+//    public byte[] generateQRCode(long transactionId) throws BadRequestException {
+//        Transaction transaction = transactionRepository.findById(transactionId)
+//                .orElseThrow(() -> new BadRequestException("Transaction not found"));
+//
+//        String vaNumber = null;
+//
+//        switch (transaction.getCategory()) {
+//            case "campaign":
+//                vaNumber = transaction.getCampaign().getVaNumber();
+//                break;
+//            case "zakat":
+//                vaNumber = transaction.getZakat().getVaNumber();
+//                break;
+//            case "infak":
+//                vaNumber = transaction.getInfak().getVaNumber();
+//                break;
+//            case "wakaf":
+//                vaNumber = transaction.getWakaf().getVaNumber();
+//                break;
+//        }
+//
+//        // Generate QR Code
+//        ByteArrayOutputStream stream = QRCode.from(vaNumber).to(ImageType.PNG).stream();
+//        return stream.toByteArray();
+//    }
 
 
     @Override

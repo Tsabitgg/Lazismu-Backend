@@ -19,7 +19,7 @@ public interface TransactionService {
     Transaction createTransaction(String transactionType, String code, TransactionRequest transactionRequest) throws BadRequestException;
     List<UserTransactionsHistoryResponse> getUserTransactionsHistory() throws BadRequestException;
 
-    byte[] generateQRCode(long transactionId) throws BadRequestException;
+//    byte[] generateQRCode(long transactionId) throws BadRequestException;
 
     Page<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign, Pageable pageable);
     Page<TransactionResponse> getAllTransaction(int year, Pageable pageable);
