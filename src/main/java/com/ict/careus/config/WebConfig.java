@@ -19,7 +19,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://103.23.103.43:8080", // IP server
                         "http://localhost:5173", // Frontend local
                         "http://localhost:5174", // Frontend local
-                        "http://localhost:8080" // Frontend di server
+                        "http://localhost:8080", // Frontend di server
+                        "Https://*.vercel.app"
                 )
                 .allowedHeaders(
                         HttpHeaders.AUTHORIZATION,
