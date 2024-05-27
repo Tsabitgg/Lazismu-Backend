@@ -15,12 +15,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(
-                        "http://103.23.103.43:8080", // IP server
-                        "http://localhost:5173", // Frontend local
-                        "http://localhost:5174", // Frontend local
-                        "http://localhost:8080" // Frontend di server
-                )
+                .allowedOrigins("*")
                 .allowedHeaders(
                         HttpHeaders.AUTHORIZATION,
                         HttpHeaders.CONTENT_TYPE,
@@ -31,6 +26,6 @@ public class WebConfig implements WebMvcConfigurer {
                         HttpMethod.PUT.name(),
                         HttpMethod.PATCH.name(),
                         HttpMethod.DELETE.name())
-                .allowCredentials(true); // Mengizinkan pengiriman kredensial (mis. cookie) pada permintaan
+                .allowCredentials(true);
     }
 }
