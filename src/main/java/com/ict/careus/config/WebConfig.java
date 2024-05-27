@@ -34,6 +34,3 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true); // Mengizinkan pengiriman kredensial (mis. cookie) pada permintaan
     }
 }
-
-
-
