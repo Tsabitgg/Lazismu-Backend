@@ -2,8 +2,11 @@ package com.ict.careus.controller;
 
 import com.ict.careus.dto.request.EditProfileRequest;
 import com.ict.careus.dto.response.MessageResponse;
+import com.ict.careus.dto.response.ServiceOfficeResponse;
 import com.ict.careus.dto.response.UserTransactionsHistoryResponse;
+import com.ict.careus.enumeration.EServiceOffice;
 import com.ict.careus.model.transaction.Transaction;
+import com.ict.careus.model.user.ServiceOffice;
 import com.ict.careus.model.user.User;
 import com.ict.careus.service.TransactionService;
 import com.ict.careus.service.UserDetailsImpl;
@@ -16,11 +19,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -73,5 +77,19 @@ public class UserController {
         } catch (BadRequestException e){
             return ResponseEntity.badRequest().body("Error: "+e.getMessage());
         }
+    }
+
+    @GetMapping("/serviceOffice/get-all")
+    public List<ServiceOfficeResponse> getAllServiceOffice(){
+        EServiceOffice[] serviceOffices = EServiceOffice.values();
+        List<ServiceOfficeResponse> serviceOfficeResponses = new ArrayList<>();
+
+        for (int i = 0; i < serviceOffices.length; i++){
+            ServiceOfficeResponse serviceOfficeDTO = new ServiceOfficeResponse();
+            serviceOfficeDTO.setId(i + 1);
+            serviceOfficeDTO.setServiceOffice(serviceOffices[i].toString());
+            serviceOfficeResponses.add(serviceOfficeDTO);
+        }
+        return serviceOfficeResponses;
     }
 }

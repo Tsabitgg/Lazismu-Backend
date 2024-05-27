@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayInputStream;
 import java.time.Year;
 
-@CrossOrigin
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api")
 public class TransactionController {
