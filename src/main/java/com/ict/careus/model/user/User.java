@@ -46,6 +46,8 @@ public class User {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date createdAt;
 
+    private long vaNumber;
+
     public User(String username, String phoneNumber, String password, String address, Role role) {
         this.username = username;
         this.phoneNumber = phoneNumber;
