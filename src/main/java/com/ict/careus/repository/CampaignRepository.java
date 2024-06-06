@@ -1,5 +1,6 @@
 package com.ict.careus.repository;
 
+import com.ict.careus.dto.response.CampaignResponse;
 import com.ict.careus.dto.response.SummaryCampaignResponse;
 import com.ict.careus.enumeration.CampaignCategory;
 import com.ict.careus.model.campaign.Campaign;
@@ -29,6 +30,9 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
     @Query("SELECT c FROM Campaign c WHERE c.active = true AND c.approved = true")
     Page<Campaign> findCampaignByActiveAndApproved(Pageable pageable);
+
+    @Query("SELECT c FROM Campaign c WHERE c.active = false AND c.approved = true")
+    Page<Campaign> findHistoryCampaign(Pageable pageable);
 
     Campaign findByCampaignCode(String campaignCode);
 
@@ -61,4 +65,9 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
     @Query("SELECT c FROM Campaign c WHERE c.creator IN (SELECT sa FROM SubAdmin sa WHERE sa.serviceOffice.serviceOfficeId = :serviceOfficeId)")
     Page<Campaign> findCampaignsByServiceOfficeId(@Param("serviceOfficeId") long serviceOfficeId, Pageable pageable);
+
+    Page<Campaign> findAllByApprovedIsTrue(Pageable pageable);
+
+
+
 }

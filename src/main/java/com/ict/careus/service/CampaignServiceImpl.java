@@ -3,19 +3,21 @@ package com.ict.careus.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ict.careus.dto.request.CampaignRequest;
+import com.ict.careus.dto.response.CampaignResponse;
 import com.ict.careus.enumeration.CampaignCategory;
 import com.ict.careus.enumeration.ERole;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.campaign.Category;
+import com.ict.careus.model.transaction.Submission;
+import com.ict.careus.model.user.SubAdmin;
 import com.ict.careus.model.user.User;
-import com.ict.careus.repository.CampaignRepository;
-import com.ict.careus.repository.CategoryRepository;
-import com.ict.careus.repository.UserRepository;
+import com.ict.careus.repository.*;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,6 +44,9 @@ public class CampaignServiceImpl implements CampaignService{
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SubmissionRepository submissionRepository;
+
     @Override
     @Transactional
     public Campaign createCampaign(CampaignRequest campaignRequest) throws BadRequestException {
@@ -58,6 +63,8 @@ public class CampaignServiceImpl implements CampaignService{
             Category category = categoryRepository.findById(campaignRequest.getCategoryId()).orElseThrow(() -> new BadRequestException("Category not found"));
             Campaign campaign = modelMapper.map(campaignRequest, Campaign.class);
             campaign.setCategory(category);
+            campaign.setCurrentAmount(0);
+            campaign.setDistribution(0);
 
             if (campaignRepository.findByCampaignCode(campaignRequest.getCampaignCode()) != null) {
                 throw new BadRequestException("Error: campaignCode is already taken!");
@@ -197,6 +204,12 @@ public class CampaignServiceImpl implements CampaignService{
         return campaigns;
     }
 
+    @Override
+    public Page<Campaign> getHistoryCampaign(Pageable pageable) {
+        Page<Campaign> historyCampaigns = campaignRepository.findHistoryCampaign(pageable);
+        return historyCampaigns;
+    }
+
 
 //    @Override
 //    public List<Campaign> getApprovedCampaigns() {
@@ -248,4 +261,42 @@ public class CampaignServiceImpl implements CampaignService{
     public Page<Campaign> getCampaignsByServiceOffice(long serviceOfficeId,Pageable pageable) {
         return campaignRepository.findCampaignsByServiceOfficeId(serviceOfficeId, pageable);
     }
+
+//    @Override
+//    public Page<CampaignResponse> getDetailsCampaign(Pageable pageable) {
+//        Page<Campaign> campaigns = campaignRepository.findAllByApprovedIsTrue(pageable);
+//        return campaigns.map(this::mapToCampaignResponse);
+//    }
+//
+//    private CampaignResponse mapToCampaignResponse(Campaign campaign) {
+//        CampaignResponse response = new CampaignResponse();
+//        response.setActive(campaign.isActive());
+//        response.setApproved(campaign.isApproved());
+//        response.setCampaignCode(campaign.getCampaignCode());
+//        response.setCampaignName(campaign.getCampaignName());
+//        response.setCreator(campaign.getCreator().getUsername());
+//        response.setDescription(campaign.getDescription());
+//        response.setStartDate(campaign.getStartDate());
+//        response.setEndDate(campaign.getEndDate());
+//        response.setTargetAmount(campaign.getTargetAmount());
+//        response.setCurrentAmount(campaign.getCurrentAmount());
+//        response.setLocation(campaign.getLocation());
+//        response.setCategoryName(campaign.getCategory().getCategoryName().name());
+//        double pengajuan = 0;
+//        double realisasi = 0;
+//        double distribution = campaign.getDistribution();
+//        List<Submission> submissions = submissionRepository.findAllByCampaign(campaign);
+//        for (Submission submission : submissions) {
+//            if (submission.isApproved()) {
+//                realisasi += submission.getSubmissionAmount();
+//            } else {
+//                pengajuan += submission.getSubmissionAmount();
+//            }
+//        }
+//        response.setPengajuan(pengajuan);
+//        response.setRealisasi(realisasi);
+//        response.setDistribution(distribution);
+//        return response;
+//    }
+
 }

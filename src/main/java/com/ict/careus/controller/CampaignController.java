@@ -2,6 +2,7 @@ package com.ict.careus.controller;
 
 import com.ict.careus.dto.request.CampaignRequest;
 import com.ict.careus.dto.response.CampaignDistributionHistoryResponse;
+import com.ict.careus.dto.response.CampaignResponse;
 import com.ict.careus.dto.response.CampaignTransactionsHistoryResponse;;
 import com.ict.careus.dto.response.MessageResponse;
 import com.ict.careus.model.campaign.Campaign;
@@ -102,6 +103,12 @@ public class CampaignController {
         return campaignService.getCampaignByActiveAndApproved(pageRequest);
     }
 
+    @GetMapping("/campaign/history-campaign")
+    public Page<Campaign> getHistoryCampaign(@RequestParam(name = "page", defaultValue = "0") int page){
+        int pageSize = 12;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        return campaignService.getHistoryCampaign(pageRequest);
+    }
 
     @GetMapping("/campaign/pending")
     public ResponseEntity<List<Campaign>> getPendingCampaigns() {
@@ -193,4 +200,11 @@ public class CampaignController {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
         return campaignService.getCampaignsByServiceOffice(serviceOfficeId, pageRequest);
     }
+
+//    @GetMapping("/campaign/all-details")
+//    public Page<CampaignResponse> getDetailsCampaign(@RequestParam(name = "page", defaultValue = "0") int page) {
+//        int pageSize = 12;
+//        PageRequest pageRequest = PageRequest.of(page, pageSize);
+//        return campaignService.getDetailsCampaign(pageRequest);
+//    }
 }

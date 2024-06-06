@@ -1,6 +1,7 @@
 package com.ict.careus.service;
 
 import com.ict.careus.dto.request.CampaignRequest;
+import com.ict.careus.dto.response.CampaignResponse;
 import com.ict.careus.model.campaign.Campaign;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
@@ -20,6 +21,7 @@ public interface CampaignService {
 //    List<Campaign> getCampaignActive(boolean isActive);
 
     Page<Campaign> getCampaignByActiveAndApproved(Pageable pageable);
+    Page<Campaign> getHistoryCampaign(Pageable pageable);
 
     List<Campaign> getPendingCampaigns();
 
@@ -32,4 +34,5 @@ public interface CampaignService {
     Page<Campaign> getCampaignsByYear(int year, Pageable pageable);
 
     Page<Campaign> getCampaignsByServiceOffice(long serviceOfficeId, Pageable pageable);
+//    Page<CampaignResponse> getDetailsCampaign(Pageable pageable);
 }
