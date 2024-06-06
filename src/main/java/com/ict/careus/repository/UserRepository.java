@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Boolean existsByPhoneNumber(String PhoneNumber);
 
-    @Query(value = "SELECT COUNT(*) AS total_users FROM users WHERE role_id != 1", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) AS total_users FROM users WHERE role_id = 3", nativeQuery = true)
     long getTotalUser();
 
     @Query(value = "SELECT COUNT(*) AS total_users FROM users WHERE role_id != 1 AND YEAR(created_at) = :year", nativeQuery = true)
