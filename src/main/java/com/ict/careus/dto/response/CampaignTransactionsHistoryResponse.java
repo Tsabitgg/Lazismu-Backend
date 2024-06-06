@@ -2,7 +2,8 @@ package com.ict.careus.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import java.util.Date;
+
+import java.time.LocalDate;
 
 @Data
 public class CampaignTransactionsHistoryResponse {
@@ -11,5 +12,5 @@ public class CampaignTransactionsHistoryResponse {
     private double transactionAmount;
     private String message;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date transactionDate;
+    private LocalDate transactionDate;
 }

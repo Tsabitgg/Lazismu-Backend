@@ -3,6 +3,7 @@ package com.ict.careus.dto.response;
 import com.ict.careus.model.transaction.Transaction;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -12,7 +13,7 @@ public class TransactionResponse {
     private String phoneNumber;
     private double transactionAmount;
     private String message;
-    private Date transactionDate;
+    private LocalDate transactionDate;
     private boolean success;
 
     public TransactionResponse(Transaction transaction) {

@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -27,7 +28,7 @@ public class Distribution {
 
     @Column(nullable = false, updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date distributionDate;
+    private LocalDate distributionDate;
 
     private String receiver;
 

@@ -13,7 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Date;
+
 
 @Data
 @AllArgsConstructor
@@ -39,7 +39,8 @@ public class Transaction {
 
     @Column(nullable = false, updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date transactionDate;
+    private LocalDate transactionDate;
+    private String channel;
     private boolean success;
 
     @Column(length = 20)
