@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -98,7 +99,11 @@ public class TransactionServiceImpl implements TransactionService {
         // Buat objek transaksi
         Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
         transaction.setUser(user);
-        transaction.setUsername(user.getUsername());
+        if (transactionRequest.getUsername() == null){
+            transaction.setUsername(user.getUsername());
+        } else if (transactionRequest.getUsername() != null){
+            transaction.setUsername(transaction.getUsername());
+        }
         transaction.setPhoneNumber(user.getPhoneNumber());
 
         // Melakukan switch berdasarkan tipe transaksi
@@ -140,8 +145,9 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         // Atur tanggal transaksi dan kategori
-        transaction.setTransactionDate(new Date());
+        transaction.setTransactionDate(LocalDate.now());
         transaction.setCategory(transactionType);
+        transaction.setChannel("OFFLINE");
         transaction.setSuccess(true);
 
         // Simpan transaksi ke dalam database
