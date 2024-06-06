@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -102,6 +103,16 @@ public class AuthServiceImpl implements AuthService {
                 user.setRole(subAdminRole);
             }
         }
+
+        Random random = new Random();
+        long min = 1000000000L;
+        long max = 9999999999L;
+
+        for (int i = 0; i < 10; i++) {
+            long vaNumber = min + (long) (random.nextDouble() * (max - min));
+            user.setVaNumber(vaNumber);
+        }
+
 
         userRepository.save(user);
 
