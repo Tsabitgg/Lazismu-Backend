@@ -5,6 +5,8 @@ import com.ict.careus.model.transaction.Submission;
 import com.ict.careus.service.SubmissionService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -61,5 +63,14 @@ public class SubmissionController {
     public ResponseEntity<List<Submission>> getPendingSubmission() {
         List<Submission> pendingSubmission = submissionService.getPendingSubmission();
         return new ResponseEntity<>(pendingSubmission, HttpStatus.OK);
+    }
+
+    @GetMapping("/submission/get-approved-by-subAdmin/{userId}")
+    public ResponseEntity<Page<Submission>> getApprovedSubmissionBySubAdmin(@PathVariable long userId,
+                                                                            @RequestParam(value = "page", defaultValue = "0") int page){
+        int pageSize = 12;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        Page<Submission> submissions = submissionService.getApprovedSubmissionBySubAdminId(userId, pageRequest);
+        return ResponseEntity.ok(submissions);
     }
 }

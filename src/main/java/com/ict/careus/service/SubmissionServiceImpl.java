@@ -9,6 +9,8 @@ import com.ict.careus.repository.SubmissionRepository;
 import com.ict.careus.repository.UserRepository;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -104,5 +106,10 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public List<Submission> getPendingSubmission() {
         return submissionRepository.findByApproved(false);
+    }
+
+    @Override
+    public Page<Submission> getApprovedSubmissionBySubAdminId(long userId, Pageable pageable) {
+        return submissionRepository.findApprovedSubmissionBySubAdminId(userId, pageable);
     }
 }
