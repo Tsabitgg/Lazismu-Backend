@@ -1,12 +1,11 @@
 package com.ict.careus.enumeration;
 
 public enum CampaignCategory {
-    MARHABBAH_RAMADHAN,
-    RAMADHAN,
+    DAKWAH,
     EKONOMI,
-    SOSIAL_DAN_KEAGAMAAN,
+    KEMANUSIAAN,
     KESEHATAN,
+    MARHABBAH_RAMADHAN,
     PENDIDIKAN,
-    DAKWAH_DAN_KEMANUSIAAN
+    RAMADHAN
 }
-
