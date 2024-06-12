@@ -262,41 +262,41 @@ public class CampaignServiceImpl implements CampaignService{
         return campaignRepository.findCampaignsByServiceOfficeId(serviceOfficeId, pageable);
     }
 
-//    @Override
-//    public Page<CampaignResponse> getDetailsCampaign(Pageable pageable) {
-//        Page<Campaign> campaigns = campaignRepository.findAllByApprovedIsTrue(pageable);
-//        return campaigns.map(this::mapToCampaignResponse);
-//    }
-//
-//    private CampaignResponse mapToCampaignResponse(Campaign campaign) {
-//        CampaignResponse response = new CampaignResponse();
-//        response.setActive(campaign.isActive());
-//        response.setApproved(campaign.isApproved());
-//        response.setCampaignCode(campaign.getCampaignCode());
-//        response.setCampaignName(campaign.getCampaignName());
-//        response.setCreator(campaign.getCreator().getUsername());
-//        response.setDescription(campaign.getDescription());
-//        response.setStartDate(campaign.getStartDate());
-//        response.setEndDate(campaign.getEndDate());
-//        response.setTargetAmount(campaign.getTargetAmount());
-//        response.setCurrentAmount(campaign.getCurrentAmount());
-//        response.setLocation(campaign.getLocation());
-//        response.setCategoryName(campaign.getCategory().getCategoryName().name());
-//        double pengajuan = 0;
-//        double realisasi = 0;
-//        double distribution = campaign.getDistribution();
-//        List<Submission> submissions = submissionRepository.findAllByCampaign(campaign);
-//        for (Submission submission : submissions) {
-//            if (submission.isApproved()) {
-//                realisasi += submission.getSubmissionAmount();
-//            } else {
-//                pengajuan += submission.getSubmissionAmount();
-//            }
-//        }
-//        response.setPengajuan(pengajuan);
-//        response.setRealisasi(realisasi);
-//        response.setDistribution(distribution);
-//        return response;
-//    }
+    @Override
+    public Page<CampaignResponse> getDetailsCampaign(Pageable pageable) {
+        Page<Campaign> campaigns = campaignRepository.findAllByApprovedIsTrue(pageable);
+        return campaigns.map(this::mapToCampaignResponse);
+    }
+
+    private CampaignResponse mapToCampaignResponse(Campaign campaign) {
+        CampaignResponse response = new CampaignResponse();
+        response.setActive(campaign.isActive());
+        response.setApproved(campaign.isApproved());
+        response.setCampaignCode(campaign.getCampaignCode());
+        response.setCampaignName(campaign.getCampaignName());
+        response.setCreator(campaign.getCreator().getUsername());
+        response.setDescription(campaign.getDescription());
+        response.setStartDate(campaign.getStartDate());
+        response.setEndDate(campaign.getEndDate());
+        response.setTargetAmount(campaign.getTargetAmount());
+        response.setCurrentAmount(campaign.getCurrentAmount());
+        response.setLocation(campaign.getLocation());
+        response.setCategoryName(campaign.getCategory().getCategoryName().name());
+        double pengajuan = 0;
+        double realisasi = 0;
+        double distribution = campaign.getDistribution();
+        List<Submission> submissions = submissionRepository.findAllByCampaign(campaign);
+        for (Submission submission : submissions) {
+            if (submission.isApproved()) {
+                realisasi += submission.getSubmissionAmount();
+            } else {
+                pengajuan += submission.getSubmissionAmount();
+            }
+        }
+        response.setPengajuan(pengajuan);
+        response.setRealisasi(realisasi);
+        response.setDistribution(distribution);
+        return response;
+    }
 
 }

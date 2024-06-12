@@ -201,10 +201,10 @@ public class CampaignController {
         return campaignService.getCampaignsByServiceOffice(serviceOfficeId, pageRequest);
     }
 
-//    @GetMapping("/campaign/all-details")
-//    public Page<CampaignResponse> getDetailsCampaign(@RequestParam(name = "page", defaultValue = "0") int page) {
-//        int pageSize = 12;
-//        PageRequest pageRequest = PageRequest.of(page, pageSize);
-//        return campaignService.getDetailsCampaign(pageRequest);
-//    }
+    @GetMapping("/campaign/all-details")
+    public Page<CampaignResponse> getDetailsCampaign(@RequestParam(name = "page", defaultValue = "0") int page) {
+        int pageSize = 12;
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        return campaignService.getDetailsCampaign(pageRequest);
+    }
 }
