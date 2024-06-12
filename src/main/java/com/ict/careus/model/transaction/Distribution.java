@@ -26,7 +26,7 @@ public class Distribution {
 
     private double distributionAmount;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate distributionDate;
 
