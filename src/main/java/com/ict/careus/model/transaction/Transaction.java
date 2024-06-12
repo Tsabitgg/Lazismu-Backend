@@ -22,7 +22,7 @@ import java.time.LocalDate;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Transaction {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
     private long transactionId;
 
     @ManyToOne
@@ -41,6 +41,9 @@ public class Transaction {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate transactionDate;
     private String channel;
+    private long vaNumber;
+    private String refNo;
+    private String method;
     private boolean success;
 
     @Column(length = 20)

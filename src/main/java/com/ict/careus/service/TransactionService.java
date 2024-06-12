@@ -21,6 +21,11 @@ public interface TransactionService {
 
 //    byte[] generateQRCode(long transactionId) throws BadRequestException;
 
+
+//    Transaction PaymentOnline(String transactionType, String code, PaymentOnlineRequest paymentOnlineRequest) throws BadRequestException;
+//
+//    Transaction processReversal(PaymentOnlineRequest request);
+
     Page<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign, Pageable pageable);
     Page<TransactionResponse> getAllTransaction(int year, Pageable pageable);
 
@@ -31,4 +36,8 @@ public interface TransactionService {
     Map<String, Double> getUserTransactionSummaryByYear(int year) throws BadRequestException;
 
     Optional<Transaction> getTransactionById(long transactionId);
+
+    Page<Transaction> getZakatTransaction(Pageable pageable);
+    Page<Transaction> getInfakTransaction(Pageable pageable);
+    Page<Transaction> getWakafTransaction(Pageable pageable);
 }

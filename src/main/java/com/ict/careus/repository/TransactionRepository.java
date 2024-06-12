@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,4 +76,14 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query(value = "SELECT count(transaction_amount) FROM transaction", nativeQuery = true)
     Double totalTransactionCount();
 
+    @Query("SELECT t FROM Transaction t where t.category = 'zakat'")
+    Page<Transaction> getZakatTransaction(Pageable pageable);
+
+    @Query("SELECT t FROM Transaction t where t.category = 'infak'")
+    Page<Transaction> getInfakTransaction(Pageable pageable);
+
+    @Query("SELECT t FROM Transaction t where t.category = 'wakaf'")
+    Page<Transaction> getWakafTransaction(Pageable pageable);
+
+    Optional<Transaction> findByVaNumberAndRefNoAndTransactionDate(long vaNumber, String refNo, LocalDate transactionDate);
 }
