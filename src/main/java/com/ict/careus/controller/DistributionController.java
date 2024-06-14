@@ -37,4 +37,5 @@ public class DistributionController {
 
         return ResponseEntity.ok(distributions);
     }
+
 }
