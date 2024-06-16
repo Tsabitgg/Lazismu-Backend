@@ -38,30 +38,31 @@ public class TransactionController {
         }
     }
 
-//    @GetMapping("/qr/{transactionId}")
-//    public ResponseEntity<?> getQRCode(@PathVariable long transactionId) {
-//        try {
-//            byte[] qrCode = transactionService.generateQRCode(transactionId);
-//            // Mengubah byte array menjadi InputStream
-//            ByteArrayInputStream inputStream = new ByteArrayInputStream(qrCode);
-//            // Membaca sebagai gambar PNG
-//            return ResponseEntity.ok()
-//                    .contentType(MediaType.IMAGE_PNG)
-//                    .body(inputStream.readAllBytes());
-//        } catch (Exception e) {
-//            return ResponseEntity.internalServerError().build();
-//        }
+//    @GetMapping("/inquiry")
+//    public String inquiry(@RequestParam String token) {
+//        return transactionService.handleInquiry(token);
+//    }
+//
+//    @PostMapping("/payment")
+//    public String payment(@RequestParam String token) {
+//        return transactionService.handlePayment(token);
+//    }
+//
+//    @PostMapping("/reversal")
+//    public String reversal(@RequestParam String token) {
+//        return transactionService.handleReversal(token);
 //    }
 
 
+
     @GetMapping("/total-transaction-count")
-    public double getTotalTransactionCount(){
+    public double getTotalTransactionCount() {
         return transactionService.getTotalTransactionCount();
     }
 
     @GetMapping("/admin/get-all-transactions")
-    public ResponseEntity<Page<TransactionResponse>> getAllTransactions(@RequestParam(name = "year", required = false) Integer year,
-                                                                        @RequestParam(name = "page", defaultValue = "0") int page){
+    public ResponseEntity<Page<Transaction>> getAllTransactions(@RequestParam(name = "year", required = false) Integer year,
+                                                                        @RequestParam(name = "page", defaultValue = "0") int page) {
         int pageSize = 12;
         PageRequest pageRequest = PageRequest.of(page, pageSize);
 
@@ -69,13 +70,13 @@ public class TransactionController {
             year = Year.now().getValue();
         }
 
-        Page<TransactionResponse> transactions = transactionService.getAllTransaction(year, pageRequest);
+        Page<Transaction> transactions = transactionService.getAllTransaction(year, pageRequest);
 
         return ResponseEntity.ok().body(transactions);
     }
 
     @GetMapping("/transaction/get-zakat")
-    public ResponseEntity<Page<Transaction>>getZakatTransaction(@RequestParam(name = "page", defaultValue = "0") int page){
+    public ResponseEntity<Page<Transaction>> getZakatTransaction(@RequestParam(name = "page", defaultValue = "0") int page) {
         int pageSize = 12;
         PageRequest pageRequest = PageRequest.of(page, pageSize);
 
@@ -84,7 +85,7 @@ public class TransactionController {
     }
 
     @GetMapping("/transaction/get-infak")
-    public ResponseEntity<Page<Transaction>>getInfakTransaction(@RequestParam(name = "page", defaultValue = "0") int page){
+    public ResponseEntity<Page<Transaction>> getInfakTransaction(@RequestParam(name = "page", defaultValue = "0") int page) {
         int pageSize = 12;
         PageRequest pageRequest = PageRequest.of(page, pageSize);
 
@@ -93,36 +94,11 @@ public class TransactionController {
     }
 
     @GetMapping("/transaction/get-wakaf")
-    public ResponseEntity<Page<Transaction>>getWakafTransaction(@RequestParam(name = "page", defaultValue = "0") int page){
+    public ResponseEntity<Page<Transaction>> getWakafTransaction(@RequestParam(name = "page", defaultValue = "0") int page) {
         int pageSize = 12;
         PageRequest pageRequest = PageRequest.of(page, pageSize);
 
         Page<Transaction> transactions = transactionService.getWakafTransaction(pageRequest);
         return ResponseEntity.ok().body(transactions);
     }
-
-
-//    @PostMapping("/payment/online/{transactionType}/{code}")
-//    public ResponseEntity<PaymentOnlineResponse> processPaymentOnline(@PathVariable String transactionType,
-//                                                                      @PathVariable String code,
-//                                                                      @RequestBody PaymentOnlineRequest paymentRequest) {
-//        try {
-//            Transaction transaction = transactionService.PaymentOnline(transactionType, code, paymentRequest);
-//            PaymentOnlineResponse response = new PaymentOnlineResponse(transaction);
-//            return ResponseEntity.ok(response);
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//    }
-//
-//    @PostMapping("/reversal")
-//    public ResponseEntity<?> processReversal(@RequestBody PaymentOnlineRequest request, HttpServletRequest httpRequest) {
-//        String token = httpRequest.getHeader("Authorization").substring(7);
-//        if (jwtUtils.validateJwtToken(token)) {
-//            Transaction transaction = transactionService.processReversal(request);
-//            return ResponseEntity.ok(new TransactionResponse(transaction));
-//        } else {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid JWT token");
-//        }
-//    }
 }

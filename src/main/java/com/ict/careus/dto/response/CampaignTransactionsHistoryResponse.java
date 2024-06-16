@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class CampaignTransactionsHistoryResponse {
@@ -11,6 +12,5 @@ public class CampaignTransactionsHistoryResponse {
     private String username;
     private double transactionAmount;
     private String message;
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate transactionDate;
+    private LocalDateTime transactionDate;
 }

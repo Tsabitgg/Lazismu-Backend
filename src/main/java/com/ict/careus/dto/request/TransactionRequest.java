@@ -8,7 +8,7 @@ import java.util.Set;
 public class TransactionRequest {
     private String username;
     private String phoneNumber;
-    private double transactionAmount;
+    private double amount;
     private String message;
     private Set<String> role;
 }

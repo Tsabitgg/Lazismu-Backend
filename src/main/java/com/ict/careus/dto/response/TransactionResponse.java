@@ -1,9 +1,11 @@
 package com.ict.careus.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ict.careus.model.transaction.Transaction;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -13,7 +15,7 @@ public class TransactionResponse {
     private String phoneNumber;
     private double transactionAmount;
     private String message;
-    private LocalDate transactionDate;
+    private LocalDateTime transactionDate;
     private boolean success;
 
     public TransactionResponse(Transaction transaction) {

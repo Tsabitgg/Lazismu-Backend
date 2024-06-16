@@ -40,7 +40,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     double totalDonationCampaign();
 
     @Query("SELECT t FROM Transaction t WHERE YEAR(t.transactionDate) = :year")
-    Page<TransactionResponse> findByYear(@Param("year") int year, Pageable pageable);
+    Page<Transaction> findByYear(@Param("year") int year, Pageable pageable);
 
     @Query(value = "SELECT\n" +
             "    SUM(transaction_amount) AS total_donation,\n" +

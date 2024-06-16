@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Data
@@ -20,8 +20,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Table(name = "transaction")
 public class Transaction {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
     private long transactionId;
 
@@ -34,12 +36,14 @@ public class Transaction {
 
     @Column(length = 15)
     private String phoneNumber;
+
     private double transactionAmount;
     private String message;
 
     @Column(nullable = false, updatable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate transactionDate;
+    @JsonFormat(pattern = "yyyyMMddHHmmss")
+    private LocalDateTime transactionDate;
+
     private String channel;
     private long vaNumber;
     private String refNo;
@@ -65,4 +69,3 @@ public class Transaction {
     @JoinColumn(name = "wakaf_id")
     private Wakaf wakaf;
 }
-

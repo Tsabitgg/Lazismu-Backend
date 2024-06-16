@@ -19,15 +19,14 @@ public interface TransactionService {
     Transaction createTransaction(String transactionType, String code, TransactionRequest transactionRequest) throws BadRequestException;
     List<UserTransactionsHistoryResponse> getUserTransactionsHistory() throws BadRequestException;
 
-//    byte[] generateQRCode(long transactionId) throws BadRequestException;
-
-
-//    Transaction PaymentOnline(String transactionType, String code, PaymentOnlineRequest paymentOnlineRequest) throws BadRequestException;
+//    String handleInquiry(String token);
 //
-//    Transaction processReversal(PaymentOnlineRequest request);
+//    String handlePayment(String token);
+//
+//    String handleReversal(String token);
 
     Page<CampaignTransactionsHistoryResponse> getCampaignTransactionsHistory(Campaign campaign, Pageable pageable);
-    Page<TransactionResponse> getAllTransaction(int year, Pageable pageable);
+    Page<Transaction> getAllTransaction(int year, Pageable pageable);
 
     double getTotalTransactionCount();
     double getTotalDonationCampaign();
