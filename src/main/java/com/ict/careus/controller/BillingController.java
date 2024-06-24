@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/api")
@@ -28,5 +31,13 @@ public class BillingController {
         } catch (RuntimeException | BadRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/billing/success/{billingId}")
+    public Map<String, String> getBillingSuccess(@PathVariable Long billingId) {
+        boolean success = billingService.getBillingSuccess(billingId);
+        Map<String, String> response = new HashMap<>();
+        response.put("success", String.valueOf(success));
+        return response;
     }
 }

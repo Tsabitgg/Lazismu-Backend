@@ -7,4 +7,6 @@ import org.apache.coyote.BadRequestException;
 
 public interface BillingService {
     Billing createBilling(String transactionType, String code, TransactionRequest transactionRequest) throws BadRequestException;
+
+    boolean getBillingSuccess(Long billingId);
 }

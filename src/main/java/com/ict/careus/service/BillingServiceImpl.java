@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -145,5 +146,11 @@ public class BillingServiceImpl implements BillingService {
 
         billing = billingRepository.save(billing);
         return billing;
+    }
+
+    @Override
+    public boolean getBillingSuccess(Long billingId) {
+        Optional<Boolean> success = billingRepository.findSuccessByBillingId(billingId);
+        return success.orElse(false);
     }
 }
