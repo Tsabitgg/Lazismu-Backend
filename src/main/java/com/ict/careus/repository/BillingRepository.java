@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface BillingRepository extends JpaRepository<Billing, Long> {
 
-    @Query("SELECT b.success FROM Billing b WHERE b.billingId = :billingId AND b.success = false")
+    @Query("SELECT b.success FROM Billing b WHERE b.billingId = :billingId")
     Optional<Boolean> findSuccessByBillingId(@Param("billingId") Long billingId);
 
 }
