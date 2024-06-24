@@ -107,13 +107,10 @@ public class AuthServiceImpl implements AuthService {
         Random random = new Random();
         long min = 1000000000L;
         long max = 9999999999L;
-        long vaBank = 797706;
 
         for (int i = 0; i < 10; i++) {
             long vaNumber = min + (long) (random.nextDouble() * (max - min));
-            String fullVaNumber = vaBank + String.format("%010d", vaNumber);
-            long vaNumberUser = Long.parseLong(fullVaNumber);
-            user.setVaNumber(vaNumberUser);
+            user.setVaNumber(vaNumber);
         }
 
 

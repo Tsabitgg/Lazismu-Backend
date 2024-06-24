@@ -4,7 +4,6 @@ import com.ict.careus.dto.request.TransactionRequest;
 import com.ict.careus.enumeration.ERole;
 import com.ict.careus.model.campaign.Campaign;
 import com.ict.careus.model.transaction.Billing;
-import com.ict.careus.model.transaction.Transaction;
 import com.ict.careus.model.user.Role;
 import com.ict.careus.model.user.User;
 import com.ict.careus.model.ziswaf.Infak;
@@ -20,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Random;
@@ -80,13 +78,10 @@ public class BillingServiceImpl implements BillingService {
             Random random = new Random();
             long min = 1000000000L;
             long max = 9999999999L;
-            long vaBank = 797706;
 
             for (int i = 0; i < 10; i++) {
                 long vaNumber = min + (long) (random.nextDouble() * (max - min));
-                String fullVaNumber = vaBank + String.format("%010d", vaNumber);
-                long vaNumberUser = Long.parseLong(fullVaNumber);
-                user.setVaNumber(vaNumberUser);
+                user.setVaNumber(vaNumber);
             }
             user = userRepository.save(user);
         } else {

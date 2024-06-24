@@ -63,8 +63,8 @@ public class DistributionServiceImpl implements DistributionService {
             User existingUser = userRepository.findByPhoneNumber(userDetails.getPhoneNumber())
                     .orElseThrow(() -> new BadRequestException("User not found"));
 
-            if (!existingUser.getRole().getName().equals(ERole.ADMIN)) {
-                throw new BadRequestException("Only ADMIN users can Distribute");
+            if (!existingUser.getRole().getName().equals(ERole.ADMIN) && !existingUser.getRole().getName().equals(ERole.SUB_ADMIN)) {
+                throw new BadRequestException("Only ADMIN and SUB ADMIN can Distribute");
             }
 
             Distribution distribution = modelMapper.map(distributionRequest, Distribution.class);
