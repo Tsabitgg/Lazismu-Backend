@@ -80,7 +80,7 @@ public class BillingServiceImpl implements BillingService {
             Random random = new Random();
             long min = 1000000000L;
             long max = 9999999999L;
-            long vaBank = 728301;
+            long vaBank = 797706;
 
             for (int i = 0; i < 10; i++) {
                 long vaNumber = min + (long) (random.nextDouble() * (max - min));
