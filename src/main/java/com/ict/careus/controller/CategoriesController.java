@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
-//@CrossOrigin("*")
+@CrossOrigin("http://103.23.103.43:8080")
 @RestController
 @RequestMapping("/api")
 public class CategoriesController {

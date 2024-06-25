@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-//@CrossOrigin("*")
+@CrossOrigin("http://103.23.103.43:8080")
 @RestController
 @RequestMapping("/api")
 public class CampaignController {
