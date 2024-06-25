@@ -19,7 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("http://103.23.103.43:8080")
+@CrossOrigin(origins= {"*"}, maxAge = 4800, allowCredentials = "false" )
 @Validated
 @RestController
 @RequestMapping("/api/auth")
