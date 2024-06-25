@@ -6,8 +6,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan
-public class CareusApplication extends SpringBootServletInitializer{
+public class CareusApplication{
 
 	public static void main(String[] args) {
 		SpringApplication.run(CareusApplication.class, args);
