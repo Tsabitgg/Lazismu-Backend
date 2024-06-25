@@ -33,6 +33,7 @@ public class BillingController {
         }
     }
 
+    @CrossOrigin
     @GetMapping("/billing/success/{billingId}")
     public Map<String, String> getBillingSuccess(@PathVariable Long billingId) {
         boolean success = billingService.getBillingSuccess(billingId);
