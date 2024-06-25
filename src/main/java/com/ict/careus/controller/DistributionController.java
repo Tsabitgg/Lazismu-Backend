@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Year;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin
 @RestController
 @RequestMapping("/api")
 public class DistributionController {
