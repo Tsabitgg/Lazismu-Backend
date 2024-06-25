@@ -26,5 +26,6 @@ public class WebConfig implements WebMvcConfigurer {
                         HttpMethod.PUT.name(),
                         HttpMethod.PATCH.name(),
                         HttpMethod.DELETE.name());
+
     }
 }
