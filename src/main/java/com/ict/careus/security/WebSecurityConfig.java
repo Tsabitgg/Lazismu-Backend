@@ -66,15 +66,17 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeRequests(auth -> auth.anyRequest().permitAll())
-                .requiresChannel(channel -> channel.anyRequest().requiresSecure()); // Mengharuskan penggunaan HTTPS
+                .authorizeHttpRequests(auth ->
+                        auth.anyRequest().permitAll()
+                );
 
-        http.authenticationProvider(authenticationProvider())
-                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.authenticationProvider(authenticationProvider());
+
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
