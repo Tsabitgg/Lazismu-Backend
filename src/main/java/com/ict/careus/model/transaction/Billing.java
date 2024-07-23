@@ -12,7 +12,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -24,6 +26,14 @@ public class Billing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
     private long billingId;
+
+    @Column(nullable = false, length = 8)
+    private String createdTime;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdTime = new SimpleDateFormat("HHmmssSS").format(new Date()).substring(0, 8);
+    }
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
@@ -44,6 +54,9 @@ public class Billing {
 
     private long vaNumber;
     private String method;
+
+    @Column(name = "transactionQrId")
+    private long transactionQrId;
     private boolean success;
 
     @Column(length = 20)

@@ -48,6 +48,9 @@ public class Transaction {
     private long vaNumber;
     private String refNo;
     private String method;
+
+    @Column(name = "transactionQrId")
+    private long transactionQrId;
     private boolean success;
 
     @Column(length = 20)
