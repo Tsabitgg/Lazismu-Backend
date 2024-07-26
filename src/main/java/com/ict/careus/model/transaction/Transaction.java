@@ -50,7 +50,7 @@ public class Transaction {
     private String method;
 
     @Column(name = "transactionQrId")
-    private long transactionQrId;
+    private Long transactionQrId;
     private boolean success;
 
     @Column(length = 20)

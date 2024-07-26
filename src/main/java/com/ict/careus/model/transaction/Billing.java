@@ -25,7 +25,7 @@ public class Billing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
-    private long billingId;
+    private Long billingId;
 
     @Column(nullable = false, length = 8)
     private String createdTime;
