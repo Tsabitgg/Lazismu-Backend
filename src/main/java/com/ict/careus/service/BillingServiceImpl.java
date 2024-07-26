@@ -99,7 +99,10 @@ public class BillingServiceImpl implements BillingService {
             billing.setUsername(billing.getUsername());
         }
         billing.setPhoneNumber(user.getPhoneNumber());
-        billing.setVaNumber(user.getVaNumber());
+
+        long vaNumber = user.getVaNumber();
+        long updatedVaNumber = 779706 + vaNumber;
+        billing.setVaNumber(updatedVaNumber);
 
         switch (transactionType) {
             case "campaign":
@@ -141,7 +144,7 @@ public class BillingServiceImpl implements BillingService {
         billing.setBillingAmount(transactionRequest.getAmount());
         billing.setBillingDate(LocalDateTime.now());
         billing.setCategory(transactionType);
-        billing.setMethod("VA NUMBER");
+        billing.setMethod("ONLINE");
         billing.setSuccess(false);
 
         billing = billingRepository.save(billing);
