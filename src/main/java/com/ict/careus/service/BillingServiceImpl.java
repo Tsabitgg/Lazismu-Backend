@@ -100,9 +100,11 @@ public class BillingServiceImpl implements BillingService {
         }
         billing.setPhoneNumber(user.getPhoneNumber());
 
-        long vaNumber = user.getVaNumber();
-        long updatedVaNumber = 779706 + vaNumber;
+        String vaNumberStr = String.valueOf(user.getVaNumber());
+        String updatedVaNumberStr = "797706" + vaNumberStr;
+        long updatedVaNumber = Long.parseLong(updatedVaNumberStr);
         billing.setVaNumber(updatedVaNumber);
+
 
         switch (transactionType) {
             case "campaign":
