@@ -13,6 +13,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -158,7 +159,7 @@ public class CampaignController {
     public ResponseEntity<Page<CampaignTransactionsHistoryResponse>> getCampaignTransactionsHistory(@PathVariable String campaignCode,
                                                                                                     @RequestParam(name = "page", defaultValue = "0") int page) {
         int pageSize = 6;
-        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "transactionDate"));
 
         Campaign campaign = campaignService.getCampaignByCode(campaignCode)
                 .orElse(null);

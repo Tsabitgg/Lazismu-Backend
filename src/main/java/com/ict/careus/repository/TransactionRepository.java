@@ -39,7 +39,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "campaign ON transaction.campaign_id = campaign.campaign_id", nativeQuery = true)
     double totalDonationCampaign();
 
-    @Query("SELECT t FROM Transaction t WHERE YEAR(t.transactionDate) = :year")
+    @Query("SELECT t FROM Transaction t WHERE YEAR(t.transactionDate) = :year ORDER BY t.transactionDate DESC")
     Page<Transaction> findByYear(@Param("year") int year, Pageable pageable);
 
     @Query(value = "SELECT\n" +

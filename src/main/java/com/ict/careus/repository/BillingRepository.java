@@ -14,4 +14,6 @@ public interface BillingRepository extends JpaRepository<Billing, Long> {
     @Query("SELECT b.success FROM Billing b WHERE b.billingId = :billingId")
     Optional<Boolean> findSuccessByBillingId(@Param("billingId") Long billingId);
 
+    Billing findByCreatedTime(String createdTime);
+
 }

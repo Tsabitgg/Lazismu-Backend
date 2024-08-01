@@ -21,24 +21,24 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
     @Query("SELECT c FROM Campaign c WHERE c.category.categoryName = :categoryName " +
             "AND c.active = true " +
-            "AND c.approved = true")
+            "AND c.approved = true ORDER BY c.campaignId DESC")
     Page<Campaign> findByCategoryName(@Param("categoryName") CampaignCategory categoryName, Pageable pageable);
 
 
     List<Campaign> findByApproved(boolean approved);
 //    List<Campaign> findCampaignByActive(boolean isActive);
 
-    @Query("SELECT c FROM Campaign c WHERE c.active = true AND c.approved = true")
+    @Query("SELECT c FROM Campaign c WHERE c.active = true AND c.approved = true ORDER BY c.campaignId DESC")
     Page<Campaign> findCampaignByActiveAndApproved(Pageable pageable);
 
-    @Query("SELECT c FROM Campaign c WHERE c.active = false AND c.approved = true")
+    @Query("SELECT c FROM Campaign c WHERE c.active = false AND c.approved = true ORDER BY c.campaignId DESC")
     Page<Campaign> findHistoryCampaign(Pageable pageable);
 
     Campaign findByCampaignCode(String campaignCode);
 
     Campaign findById(long campaignId);
 
-    @Query("SELECT c FROM Campaign c WHERE LOWER(c.campaignName) LIKE LOWER(CONCAT('%', :campaignName, '%'))")
+    @Query("SELECT c FROM Campaign c WHERE LOWER(c.campaignName) LIKE LOWER(CONCAT('%', :campaignName, '%')) AND c.approved = true AND t.active = true")
     Page<Campaign> findByCampaignName(String campaignName, Pageable pageable);
 
     @Query("SELECT c FROM Campaign c WHERE YEAR(c.startDate) = :year")
@@ -54,7 +54,9 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
             " c.active\n" +
             "FROM \n" +
             " Campaign c\n" +
-            "GROUP BY c.campaignId, c.currentAmount")
+            "GROUP BY c.campaignId, c.currentAmount \n" +
+            "ORDER BY c.campaignId DESC"
+    )
     Page<Object []> getAmilCampaign(Pageable pageable);
 
     @Query("SELECT SUM(c.currentAmount) AS totalCampaignTransactionAmount, " +
@@ -63,11 +65,9 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
             "FROM Campaign c")
     Optional<Map<String, Double>> getSummaryCampaign();
 
-    @Query("SELECT c FROM Campaign c WHERE c.creator IN (SELECT sa FROM SubAdmin sa WHERE sa.serviceOffice.serviceOfficeId = :serviceOfficeId)")
+    @Query("SELECT c FROM Campaign c WHERE c.creator IN (SELECT sa FROM SubAdmin sa WHERE sa.serviceOffice.serviceOfficeId = :serviceOfficeId) ORDER BY c.campaignId DESC")
     Page<Campaign> findCampaignsByServiceOfficeId(@Param("serviceOfficeId") long serviceOfficeId, Pageable pageable);
 
     Page<Campaign> findAllByApprovedIsTrue(Pageable pageable);
-
-
 
 }
