@@ -38,7 +38,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
     Campaign findById(long campaignId);
 
-    @Query("SELECT c FROM Campaign c WHERE LOWER(c.campaignName) LIKE LOWER(CONCAT('%', :campaignName, '%')) AND c.approved = true AND t.active = true")
+    @Query("SELECT c FROM Campaign c WHERE LOWER(c.campaignName) LIKE LOWER(CONCAT('%', :campaignName, '%')) AND c.approved = true AND c.active = true")
     Page<Campaign> findByCampaignName(String campaignName, Pageable pageable);
 
     @Query("SELECT c FROM Campaign c WHERE YEAR(c.startDate) = :year")
